@@ -28,6 +28,8 @@
     <label for="tab2">Aba 2</label>
 
     <!-- Conteúdo -->
+
+    <!-- Massagem -->
     <div id="content1" class="tab-content">
       <table class="table table-bordered">
       <thead>
@@ -35,7 +37,6 @@
           <th>ID</th>
           <th>Nome</th>
           <th>Massagem</th>
-          <th>Limpeza de pele</th>
           <th>Check-ins</th>
           <th>Ações</th>
         </tr>
@@ -50,21 +51,16 @@
           {% else %}
             <td>não apto</td>
           {% endif %}
-          {% if cliente.status_limpeza %}
-            <td>apto para agendar limpeza</td>
-          {% else %}
-            <td>não apto</td>
-          {% endif %}
           <td>{{ cliente.checkins }}</td>
           <td>
-            <a href="/checkin/{{ cliente.id }}" class="btn btn-success btn-sm">+ Check-in</a>
+            <a href="/checkinmassagem/{{ cliente.id }}" class="btn btn-success btn-sm">+ Check-in</a>
           </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
     </div>
-
+    
     <div id="content2" class="tab-content">
       <table class="table table-bordered">
       <thead>
