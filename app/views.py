@@ -16,11 +16,13 @@ def init_db():
     CREATE TABLE IF NOT EXISTS clientes (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT NOT NULL,
+        status_massagem BOOLEAN DEFAULT FALSE,
+        status_limpeza BOOLEAN DEFAULT FALSE,
         checkins INTEGER DEFAULT 0
     )
     ''')
     conn.execute('''
-    CREATE TABLE IF NOT EXISTS historico_checkins (
+    CREATE TABLE IF NOT EXISTS checkins (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         cliente_id INTEGER,
         data TEXT,
@@ -43,7 +45,7 @@ def homepage():
 def adicionar_cliente():
     nome = request.form['nome']
     conn = get_db_connection()
-    conn.execute("INSERT INTO clientes (nome, checkins) VALUES (?, 0)", (nome,))
+    conn.execute("INSERT INTO clientes (nome, status_massagem, status_limpeza, checkins) VALUES (?, 0, 0, 0)", (nome,))
     conn.commit()
     conn.close()
     return redirect(url_for('homepage'))
@@ -52,18 +54,37 @@ def adicionar_cliente():
 def registrar_checkin(cliente_id):
     conn = get_db_connection()
     cliente = conn.execute("SELECT * FROM clientes WHERE id = ?", (cliente_id,)).fetchone()
+    status_massagem = False
+    status_limpeza = False
 
     if cliente:
         novos_checkins = cliente['checkins'] + 1
-        if novos_checkins >= 4:
-            novos_checkins = 0  # Zera os checkins
+        if novos_checkins >= 3:
+            status_massagem = True  # Zera os checkins
             msg = "🎉 Cliente ganhou uma massagem!"
-        else:
+            if novos_checkins >= 4:
+                status_limpeza = True
+        
+        if novos_checkins >= 5:
+            novos_checkins = 0
+            status_limpeza = False
+            status_massagem = False
             msg = "✅ Check-in registrado!"
         
         conn.execute("UPDATE clientes SET checkins = ? WHERE id = ?", (novos_checkins, cliente_id))
-        conn.execute("INSERT INTO historico_checkins (cliente_id, data) VALUES (?, ?)",
+        conn.execute("UPDATE clientes SET status_massagem = ? WHERE id = ?", (status_massagem,cliente_id))
+        conn.execute("UPDATE clientes SET status_limpeza = ? WHERE id = ?", (status_limpeza,cliente_id))
+        conn.execute("INSERT INTO checkins (cliente_id, data) VALUES (?, ?)",
                      (cliente_id, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         conn.commit()
     conn.close()
     return redirect(url_for('homepage'))
+
+@app.route('/teste')
+def teste():
+    conn = get_db_connection()
+    cliente = conn.execute("SELECT * FROM clientes WHERE id = 1").fetchone()
+    print(cliente['checkins'])
+    print(cliente['status_massagem'])
+    print(cliente['status_limpeza'])
+    return "testizin"

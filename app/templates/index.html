@@ -16,12 +16,15 @@
       </div>
     </form>
 
+    <a href="/teste" class="btn btn-success btn-sm">Testizin pai</a>
 
     <table class="table table-bordered">
       <thead>
         <tr>
           <th>ID</th>
           <th>Nome</th>
+          <th>Massagem</th>
+          <th>Limpeza de pele</th>
           <th>Check-ins</th>
           <th>Ações</th>
         </tr>
@@ -31,6 +34,16 @@
         <tr>
           <td>{{ cliente.id }}</td>
           <td>{{ cliente.nome }}</td>
+          {% if cliente.status_massagem %}
+            <td>apto para agendar massagem</td>
+          {% else %}
+            <td>não apto</td>
+          {% endif %}
+          {% if cliente.status_limpeza %}
+            <td>apto para agendar limpeza</td>
+          {% else %}
+            <td>não apto</td>
+          {% endif %}
           <td>{{ cliente.checkins }}</td>
           <td>
             <a href="/checkin/{{ cliente.id }}" class="btn btn-success btn-sm">+ Check-in</a>
