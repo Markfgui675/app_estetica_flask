@@ -17,15 +17,14 @@
       </div>
     </form>
 
-    <a href="/teste" class="btn btn-success btn-sm">Testizin pai</a>
 
     <div class="tabs">
     <!-- Abas -->
     <input type="radio" name="tab" id="tab1" checked>
-    <label for="tab1">Aba 1</label>
+    <label for="tab1">Massagem</label>
 
     <input type="radio" name="tab" id="tab2">
-    <label for="tab2">Aba 2</label>
+    <label for="tab2">Limpeza de pele</label>
 
     <!-- Conteúdo -->
 
@@ -42,7 +41,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for cliente in clientes %}
+        {% for cliente in clientes_massagem %}
         <tr>
           <td>{{ cliente.id }}</td>
           <td>{{ cliente.nome }}</td>
@@ -51,7 +50,7 @@
           {% else %}
             <td>não apto</td>
           {% endif %}
-          <td>{{ cliente.checkins }}</td>
+          <td>{{ cliente.checkins_massagem }}</td>
           <td>
             <a href="/checkinmassagem/{{ cliente.id }}" class="btn btn-success btn-sm">+ Check-in</a>
           </td>
@@ -61,36 +60,33 @@
     </table>
     </div>
     
+
+
+    <!-- Limpeza -->
     <div id="content2" class="tab-content">
       <table class="table table-bordered">
       <thead>
         <tr>
           <th>ID</th>
           <th>Nome</th>
-          <th>Massagem</th>
           <th>Limpeza de pele</th>
           <th>Check-ins</th>
           <th>Ações</th>
         </tr>
       </thead>
       <tbody>
-        {% for cliente in clientes %}
+        {% for cliente in clientes_limpeza %}
         <tr>
           <td>{{ cliente.id }}</td>
           <td>{{ cliente.nome }}</td>
-          {% if cliente.status_massagem %}
-            <td>apto para agendar massagem</td>
-          {% else %}
-            <td>não apto</td>
-          {% endif %}
           {% if cliente.status_limpeza %}
             <td>apto para agendar limpeza</td>
           {% else %}
             <td>não apto</td>
           {% endif %}
-          <td>{{ cliente.checkins }}</td>
+          <td>{{ cliente.checkins_limpeza }}</td>
           <td>
-            <a href="/checkin/{{ cliente.id }}" class="btn btn-success btn-sm">+ Check-in</a>
+            <a href="/checkinlimpeza/{{ cliente.id }}" class="btn btn-success btn-sm">+ Check-in</a>
           </td>
         </tr>
         {% endfor %}
