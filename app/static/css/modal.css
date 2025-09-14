@@ -1,0 +1,78 @@
+/* Estilo do fundo do modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background:transparent;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.4s ease forwards;
+}
+
+.modal-size{
+    width: 70%;
+    height: 500px;
+}
+
+/* Caixa do modal */
+.modal-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 70vw;
+    height: 500px;
+    text-align: center;
+    animation: zoomIn 0.3s ease forwards;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-header {
+    font-size: 18px;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+/* Botão de fechar */
+.close {
+    float: right;
+    font-size: 48px;
+    cursor: pointer;
+    color: #888;
+}
+
+.close:hover {
+    color: black;
+}
+
+.form-adicionar{
+    width: 80%;
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from {
+        background: rgba(0, 0, 0, 0);
+    }
+
+    to {
+        background: rgba(0, 0, 0, 0.6);
+    }
+}
+
+@keyframes zoomIn {
+    from {
+        transform: scale(0.7);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

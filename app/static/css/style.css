@@ -1,52 +1,31 @@
 body {
-    font-family: Arial, sans-serif;
-    background: #ffffff;
-    padding: 20px;
+    padding: 24px;
 }
 
-.tabs {
-    width: 90vw;
-    margin: auto;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+.nav {
+    margin-bottom: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding-top: 32px;
 }
 
-/* Esconde os radio buttons */
-.tabs input[type="radio"] {
-    display: none;
-}
-
-/* Estilo dos botões (abas) */
-.tabs label {
+.nav a {
     display: inline-block;
-    padding: 8px 16px;
-    cursor: pointer;
-    background: #ddd;
-    color: #333;
-    border-radius: 8px 8px 0 0;
-    margin-right: 2px;
+    padding: 10px 20px;
+    margin: 0 5px;
+    text-decoration: none;
+    color: white;
+    background: #555;
+    border-radius: 5px;
     transition: background 0.3s;
 }
 
-.tabs label:hover {
-    background: #bbb;
+.nav a:hover {
+    background: #777;
 }
 
-/* Aba ativa */
-.tabs input[type="radio"]:checked + label {
+.nav .active {
     background: #4285f4;
-    color: white;
-}
-
-/* Conteúdo */
-.tab-content {
-    display: none;
-    padding: 20px;
-    border-top: 2px solid #4285f4;
-}
-
-#tab1:checked ~ #content1,
-#tab2:checked ~ #content2 {
-    display: block;
 }

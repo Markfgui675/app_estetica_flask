@@ -53,24 +53,48 @@ def init_db():
 
 init_db()
 
-@app.route("/")
-def homepage():
-    conn = get_db_connection()
-    clientes_massagem = conn.execute('SELECT * FROM clientes_massagem').fetchall()
-    clientes_limpeza = conn.execute('SELECT * FROM clientes_limpeza').fetchall()
-    conn.close()
-    return render_template('index.html', clientes_massagem=clientes_massagem, clientes_limpeza=clientes_limpeza)
-
-@app.route('/adicionar', methods=['POST'])
-def adicionar_cliente():
-    nome = request.form['nome']
+def adicionar_cliente_limpeza(nome):
     conn = get_db_connection()
     conn.execute("INSERT INTO clientes_limpeza (nome, status_limpeza, checkins_limpeza) VALUES (?, 0, 0)", (nome,))
     conn.commit()
     conn.close()
-    return redirect(url_for('homepage'))
 
-    #modificar forma de registro de clientes
+def adicionar_cliente_massagem(nome):
+    conn = get_db_connection()
+    conn.execute("INSERT INTO clientes_massagem (nome, status_massagem, checkins_massagem) VALUES (?, 0, 0)", (nome,))
+    conn.commit()
+    conn.close()
+
+
+
+
+
+@app.route("/")
+def homepage_massagem():
+    conn = get_db_connection()
+    clientes_massagem = conn.execute('SELECT * FROM clientes_massagem').fetchall()
+    conn.close()
+    return render_template('massagem.html', clientes_massagem=clientes_massagem)
+
+@app.route('/limpeza')
+def homepage_limpeza():
+    conn = get_db_connection()
+    clientes_limpeza = conn.execute('SELECT * FROM clientes_limpeza').fetchall()
+    conn.close()
+    return render_template('limpeza.html',clientes_limpeza=clientes_limpeza)
+
+
+@app.route('/adicionar', methods=['POST'])
+def adicionar_cliente():
+    nome = request.form['nome']
+    tipo = request.form['servico']
+    if tipo.lower() == 'Limpeza de pele'.lower():
+        adicionar_cliente_limpeza(nome)
+        return redirect(url_for('homepage_limpeza'))
+    if tipo.lower() == 'Massagem'.lower():
+        adicionar_cliente_massagem(nome)
+        return redirect(url_for('homepage_massagem'))
+        
 
 @app.route('/checkinmassagem/<int:cliente_id>')
 def registrar_checkin_massagem(cliente_id):
@@ -94,7 +118,7 @@ def registrar_checkin_massagem(cliente_id):
                         (cliente_id, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         conn.commit()
     conn.close()
-    return redirect(url_for('homepage'))
+    return redirect(url_for('homepage_massagem'))
 
 @app.route('/checkinlimpeza/<int:cliente_id>')
 def registrar_checkin_limpeza(cliente_id):
@@ -117,5 +141,5 @@ def registrar_checkin_limpeza(cliente_id):
                         (cliente_id, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         conn.commit()
     conn.close()
-    return redirect(url_for('homepage'))
+    return redirect(url_for('homepage_massagem'))
 
