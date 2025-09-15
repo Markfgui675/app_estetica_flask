@@ -28,7 +28,7 @@
                 <tr>
                 <th>ID</th>
                 <th>Nome</th>
-                <th>Massagem</th>
+                <th>Status</th>
                 <th>Check-ins</th>
                 <th>Ações</th>
                 </tr>
@@ -37,11 +37,11 @@
                 {% for cliente in clientes_massagem %}
                 <tr>
                 <td>{{ cliente.id }}</td>
-                <td>{{ cliente.nome }}</td>
+                <td><a href="/clientemassagem/{{cliente.id}}">{{ cliente.nome }}</a></td>
                 {% if cliente.status_massagem %}
-                    <td>apto para agendar massagem</td>
+                    <td><a class="agendar" href="https://www.tecnofit.com.br" target="_blank">Agendar</a></td>
                 {% else %}
-                    <td>não apto</td>
+                    <td>Não Apto</td>
                 {% endif %}
                 <td>{{ cliente.checkins_massagem }}</td>
                 <td>
@@ -66,7 +66,7 @@
 
 
 
-        <!-- Modal -->
+        <!-- Modal Adicionar-->
         <div id="myModal" class="modal">
             <div class="modal-content">
             <span style="cursor: pointer;" class="close" id="closeModal">&times;</span>
@@ -89,8 +89,9 @@
                 <button type="submit" class="btn btn-success">Salvar</button>
             </form>
         </div>
+
     </div>
 
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
 </body>
 </html>

@@ -1,0 +1,50 @@
+import sqlite3
+from datetime import datetime
+
+# Função para conexão com banco
+def get_db_connection():
+    conn = sqlite3.connect('checkins.db')
+    conn.row_factory = sqlite3.Row
+    return conn
+
+# Criação das tabelas
+def init_db():
+    conn = get_db_connection()
+
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS clientes_massagem (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        status_massagem BOOLEAN DEFAULT FALSE,
+        checkins_massagem INTEGER DEFAULT 0
+    )
+    ''')
+
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS clientes_limpeza (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome TEXT NOT NULL,
+        status_limpeza BOOLEAN DEFAULT FALSE,
+        checkins_limpeza INTEGER DEFAULT 0
+    )
+    ''')
+
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS checkins_massagem (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        cliente_id INTEGER,
+        data TEXT,
+        FOREIGN KEY(cliente_id) REFERENCES clientes(id)
+    )
+    ''')
+
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS checkins_limpeza (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        cliente_id INTEGER,
+        data TEXT,
+        FOREIGN KEY(cliente_id) REFERENCES clientes(id)
+    )
+    ''')
+    conn.commit()
+    conn.close()

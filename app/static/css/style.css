@@ -29,3 +29,35 @@ body {
 .nav .active {
     background: #4285f4;
 }
+
+
+
+a{
+    text-decoration: none;
+}
+
+.agendar{
+    color: green;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.btn-remover{
+    background-color: red;
+    border-color: red;
+}
+.btn-home{
+    margin-bottom: 16px;
+    margin-right: 8px;
+}
+
+.box-btn-home{
+    width: 100%;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+}
+
+.table-checkin{
+    margin-top: 32px;
+}

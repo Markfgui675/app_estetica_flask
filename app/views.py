@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, redirect, url_for
-import sqlite3
 from datetime import datetime
 from app import app
+
+import sqlite3
+from datetime import datetime
 
 # Função para conexão com banco
 def get_db_connection():
@@ -27,7 +29,8 @@ def init_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT NOT NULL,
         status_limpeza BOOLEAN DEFAULT FALSE,
-        checkins_limpeza INTEGER DEFAULT 0
+        checkins_limpeza INTEGER DEFAULT 0,
+        historico_agendamento TEXT
     )
     ''')
 
@@ -48,8 +51,10 @@ def init_db():
         FOREIGN KEY(cliente_id) REFERENCES clientes(id)
     )
     ''')
+
     conn.commit()
     conn.close()
+
 
 init_db()
 
@@ -65,8 +70,19 @@ def adicionar_cliente_massagem(nome):
     conn.commit()
     conn.close()
 
+def excluir_cliente_limpeza(cliente_id):
+    conn = get_db_connection()
+    conn.execute("DELETE FROM clientes_limpeza WHERE id = ?", (cliente_id,))
+    conn.execute("DELETE FROM checkins_limpeza WHERE cliente_id = ?", (cliente_id,))
+    conn.commit()
+    conn.close()
 
-
+def excluir_cliente_massagem(cliente_id):
+    conn = get_db_connection()
+    conn.execute("DELETE FROM clientes_massagem WHERE id = ?", (cliente_id,))
+    conn.execute("DELETE FROM checkins_massagem WHERE cliente_id = ?", (cliente_id,))
+    conn.commit()
+    conn.close()
 
 
 @app.route("/")
@@ -94,7 +110,22 @@ def adicionar_cliente():
     if tipo.lower() == 'Massagem'.lower():
         adicionar_cliente_massagem(nome)
         return redirect(url_for('homepage_massagem'))
-        
+
+@app.route('/clientemassagem/<int:cliente_id>')
+def cliente_massagem(cliente_id):
+    conn = get_db_connection()
+    cliente = conn.execute("SELECT * FROM clientes_massagem WHERE id = ?", (cliente_id,)).fetchone()
+    checkins = conn.execute("SELECT * FROM checkins_massagem WHERE cliente_id = ?", (cliente_id,))
+    return render_template('cliente.html', cliente=cliente, checkins=checkins)
+    
+
+@app.route('/clientelimpeza/<int:cliente_id>')
+def cliente_limpeza(cliente_id):
+    conn = get_db_connection()
+    cliente = conn.execute("SELECT * FROM clientes_limpeza WHERE id = ?", (cliente_id,)).fetchone()
+    checkins = conn.execute("SELECT * FROM checkins_limpeza WHERE cliente_id = ?", (cliente_id,))
+    return render_template('cliente.html', cliente=cliente, checkins=checkins)
+
 
 @app.route('/checkinmassagem/<int:cliente_id>')
 def registrar_checkin_massagem(cliente_id):
@@ -115,7 +146,7 @@ def registrar_checkin_massagem(cliente_id):
         conn.execute("UPDATE clientes_massagem SET checkins_massagem = ? WHERE id = ?", (novos_checkins, cliente_id))
         conn.execute("UPDATE clientes_massagem SET status_massagem = ? WHERE id = ?", (status_massagem,cliente_id))
         conn.execute("INSERT INTO checkins_massagem (cliente_id, data) VALUES (?, ?)",
-                        (cliente_id, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+                        (cliente_id, datetime.now().strftime("%d/%m/%Y %H:%M:%S")))
         conn.commit()
     conn.close()
     return redirect(url_for('homepage_massagem'))
@@ -138,8 +169,19 @@ def registrar_checkin_limpeza(cliente_id):
         conn.execute("UPDATE clientes_limpeza SET checkins_limpeza = ? WHERE id = ?", (novos_checkins, cliente_id))
         conn.execute("UPDATE clientes_limpeza SET status_limpeza = ? WHERE id = ?", (status_limpeza,cliente_id))
         conn.execute("INSERT INTO checkins_limpeza (cliente_id, data) VALUES (?, ?)",
-                        (cliente_id, datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+                        (cliente_id, datetime.now().strftime("%d/%m/%Y %H:%M:%S")))
         conn.commit()
     conn.close()
-    return redirect(url_for('homepage_massagem'))
+    return redirect(url_for('homepage_limpeza'))
+
+@app.route("/excluir_massagem/<int:cliente_id>")
+def excluir_massagem(cliente_id):
+    excluir_cliente_massagem(cliente_id)
+    return redirect(url_for("homepage_massagem"))
+
+@app.route("/excluir_limpeza/<int:cliente_id>")
+def excluir_limpeza(cliente_id):
+    excluir_cliente_limpeza(cliente_id)
+    return redirect(url_for("homepage_limpeza"))
+
 

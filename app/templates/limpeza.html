@@ -28,7 +28,7 @@
                 <tr>
                 <th>ID</th>
                 <th>Nome</th>
-                <th>Limpeza de pele</th>
+                <th>Status</th>
                 <th>Check-ins</th>
                 <th>Ações</th>
                 </tr>
@@ -37,11 +37,11 @@
                 {% for cliente in clientes_limpeza %}
                 <tr>
                 <td>{{ cliente.id }}</td>
-                <td>{{ cliente.nome }}</td>
+                <td><a href="/clientelimpeza/{{cliente.id}}">{{ cliente.nome }}</a></td>
                 {% if cliente.status_limpeza %}
-                    <td>apto para agendar limpeza</td>
+                    <td><a class="agendar" href="https://www.tecnofit.com.br" target="_blank">Agendar</a></td>
                 {% else %}
-                    <td>não apto</td>
+                    <td>Não Apto</td>
                 {% endif %}
                 <td>{{ cliente.checkins_limpeza }}</td>
                 <td>
@@ -90,6 +90,6 @@
         </div>
     </div>
 
-    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
 </body>
 </html>
