@@ -116,7 +116,7 @@ def cliente_massagem(cliente_id):
     conn = get_db_connection()
     cliente = conn.execute("SELECT * FROM clientes_massagem WHERE id = ?", (cliente_id,)).fetchone()
     checkins = conn.execute("SELECT * FROM checkins_massagem WHERE cliente_id = ?", (cliente_id,))
-    return render_template('cliente.html', cliente=cliente, checkins=checkins)
+    return render_template('cliente_massagem.html', cliente=cliente, checkins=checkins)
     
 
 @app.route('/clientelimpeza/<int:cliente_id>')
@@ -124,7 +124,7 @@ def cliente_limpeza(cliente_id):
     conn = get_db_connection()
     cliente = conn.execute("SELECT * FROM clientes_limpeza WHERE id = ?", (cliente_id,)).fetchone()
     checkins = conn.execute("SELECT * FROM checkins_limpeza WHERE cliente_id = ?", (cliente_id,))
-    return render_template('cliente.html', cliente=cliente, checkins=checkins)
+    return render_template('cliente_limpeza.html', cliente=cliente, checkins=checkins)
 
 
 @app.route('/checkinmassagem/<int:cliente_id>')
