@@ -61,3 +61,14 @@ a{
 .table-checkin{
     margin-top: 32px;
 }
+
+.alert {
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+}
+.alert-warning {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeeba;
+}

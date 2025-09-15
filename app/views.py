@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from datetime import datetime
 from app import app
 
@@ -134,6 +134,16 @@ def registrar_checkin_massagem(cliente_id):
     status_massagem = False
 
     if cliente:
+
+        hoje = datetime.now().strftime("%d/%m/%Y")
+
+        checkin_existente = conn.execute('''SELECT * FROM checkins_massagem WHERE cliente_id = ? AND data LIKE ?''', (cliente_id, f"{hoje}%")).fetchone()
+
+        if checkin_existente:
+            flash(f"O cliente {cliente['nome']} já fez check-in hoje!", "warning")
+            conn.close()
+            return redirect(url_for('homepage_massagem'))
+        
         novos_checkins = cliente['checkins_massagem'] + 1
         if novos_checkins >= 3:
             status_massagem = True
@@ -158,6 +168,16 @@ def registrar_checkin_limpeza(cliente_id):
     status_limpeza = False
 
     if cliente:
+
+        hoje = datetime.now().strftime("%d/%m/%Y")
+
+        checkin_existente = conn.execute('''SELECT * FROM checkins_limpeza WHERE cliente_id = ? AND data LIKE ?''', (cliente_id, f"{hoje}%")).fetchone()
+
+        if checkin_existente:
+            flash(f"O cliente {cliente['nome']} já fez check-in hoje!", "warning")
+            conn.close()
+            return redirect(url_for('homepage_limpeza'))
+        
         novos_checkins = cliente['checkins_limpeza'] +1
         if novos_checkins >= 4:
             status_limpeza = True

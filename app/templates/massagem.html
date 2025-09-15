@@ -23,6 +23,16 @@
             <a href="/limpeza">Limpeza de Pele</a>
         </div>
 
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -39,7 +49,7 @@
                 <td>{{ cliente.id }}</td>
                 <td><a href="/clientemassagem/{{cliente.id}}">{{ cliente.nome }}</a></td>
                 {% if cliente.status_massagem %}
-                    <td><a class="agendar" href="https://www.tecnofit.com.br" target="_blank">Agendar</a></td>
+                    <td><a class="agendar" href="https://app.tecnofit.com.br/ng/calendar/week" target="_blank">Agendar</a></td>
                 {% else %}
                     <td>Não Apto</td>
                 {% endif %}
