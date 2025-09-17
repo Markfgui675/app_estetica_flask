@@ -84,6 +84,26 @@ def excluir_cliente_massagem(cliente_id):
     conn.commit()
     conn.close()
 
+def excluir_checkin_massagem(checkin_id):
+    conn = get_db_connection()
+    cliente_id = conn.execute("SELECT * FROM checkins_massagem WHERE id = ?", (checkin_id,)).fetchone()['cliente_id']
+    cliente = conn.execute("SELECT * FROM clientes_massagem WHERE id = ?", (cliente_id,)).fetchone()
+    conn.execute("DELETE FROM checkins_massagem WHERE id = ?", (checkin_id,))
+    novos_checkins = cliente['checkins_massagem'] - 1
+    conn.execute("UPDATE clientes_massagem SET checkins_massagem = ? WHERE id = ?", (novos_checkins, cliente_id))
+    conn.commit()
+    conn.close()
+
+def excluir_checkin_limpeza(checkin_id):
+    conn = get_db_connection()
+    cliente_id = conn.execute("SELECT * FROM checkins_limpeza WHERE id = ?", (checkin_id,)).fetchone()['cliente_id']
+    cliente = conn.execute("SELECT * FROM clientes_limpeza WHERE id = ?", (cliente_id,)).fetchone()
+    conn.execute("DELETE FROM checkins_limpeza WHERE id = ?", (checkin_id,))
+    novos_checkins = cliente['checkins_limpeza'] - 1
+    conn.execute("UPDATE clientes_limpeza SET checkins_limpeza = ? WHERE id = ?", (novos_checkins, cliente_id))
+    conn.commit()
+    conn.close()
+
 
 @app.route("/")
 def homepage_massagem():
@@ -204,4 +224,15 @@ def excluir_limpeza(cliente_id):
     excluir_cliente_limpeza(cliente_id)
     return redirect(url_for("homepage_limpeza"))
 
+@app.route("/excluircheckinmassagem/<int:checkin_id>")
+def excluir_ch_massagem(checkin_id):
+    excluir_checkin_massagem(checkin_id)
+    flash(f"Check-in removido!", "warning")
+    return redirect(url_for("homepage_massagem"))
+
+@app.route("/excluircheckinlimpeza/<int:checkin_id>")
+def excluir_ch_limpeza(checkin_id):
+    excluir_checkin_limpeza(checkin_id)
+    flash(f"Check-in removido!", "warning")
+    return redirect(url_for("homepage_limpeza"))
 

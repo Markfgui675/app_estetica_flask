@@ -26,16 +26,28 @@
         <!-- Botão que abre o modal -->
         <button class="btn btn-primary btn-remover" id="openModal">Remover Cliente</button>
 
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
         <table class="table table-bordered table-checkin">
             <thead>
                 <tr>
                 <th>Data de check-in</th>
+                <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
                 {% for checkin in checkins %}
                 <tr>
                 <td>{{ checkin.data }}</td>
+                <td><a href="/excluircheckinmassagem/{{checkin.id}}" class="btn btn-primary btn-remover excludecheckin">Excluir check-in</a></td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -55,7 +67,7 @@
 
 
 
-        <!-- Modal Adicionar-->
+        <!-- Modal remover cliente-->
         <div id="myModal" class="modal">
             <div class="modal-content">
             <span style="cursor: pointer;" class="close" id="closeModal">&times;</span>
