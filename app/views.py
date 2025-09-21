@@ -89,7 +89,11 @@ def excluir_checkin_massagem(checkin_id):
     cliente_id = conn.execute("SELECT * FROM checkins_massagem WHERE id = ?", (checkin_id,)).fetchone()['cliente_id']
     cliente = conn.execute("SELECT * FROM clientes_massagem WHERE id = ?", (cliente_id,)).fetchone()
     conn.execute("DELETE FROM checkins_massagem WHERE id = ?", (checkin_id,))
-    novos_checkins = cliente['checkins_massagem'] - 1
+
+    novos_checkins = cliente['checkins_massagem']
+    if novos_checkins > 0:
+        novos_checkins-=1
+
     conn.execute("UPDATE clientes_massagem SET checkins_massagem = ? WHERE id = ?", (novos_checkins, cliente_id))
     conn.commit()
     conn.close()
@@ -99,7 +103,11 @@ def excluir_checkin_limpeza(checkin_id):
     cliente_id = conn.execute("SELECT * FROM checkins_limpeza WHERE id = ?", (checkin_id,)).fetchone()['cliente_id']
     cliente = conn.execute("SELECT * FROM clientes_limpeza WHERE id = ?", (cliente_id,)).fetchone()
     conn.execute("DELETE FROM checkins_limpeza WHERE id = ?", (checkin_id,))
-    novos_checkins = cliente['checkins_limpeza'] - 1
+
+    novos_checkins = cliente['checkins_limpeza']
+    if novos_checkins > 0:
+        novos_checkins-=1
+
     conn.execute("UPDATE clientes_limpeza SET checkins_limpeza = ? WHERE id = ?", (novos_checkins, cliente_id))
     conn.commit()
     conn.close()
@@ -157,18 +165,26 @@ def ad_checkin_massagem_data(cliente_id):
                 break
             data_f+=f'{data_01_x[i]}/'
         data_input = f'{data_f} {data[1]}'
+        status_massagem = False
         try:
             #Valida e formata a data
             data_formatada = datetime.strptime(data_input, "%d/%m/%Y %H:%M")
             data_str = data_formatada.strftime("%d/%m/%Y %H:%M:%S")
 
             novos_checkins = cliente['checkins_massagem'] + 1
+            if novos_checkins >= 3:
+                status_massagem = True
+            
+            if novos_checkins >= 5:
+                status_massagem = False
+                novos_checkins = 0
 
             conn.execute(
                 "INSERT INTO checkins_massagem (cliente_id, data) VALUES (?, ?)",
                 (cliente_id, data_str)
             )
             conn.execute("UPDATE clientes_massagem SET checkins_massagem = ? WHERE id = ?", (novos_checkins, cliente_id))
+            conn.execute("UPDATE clientes_massagem SET status_massagem = ? WHERE id = ?", (status_massagem,cliente_id))
             conn.commit()
             flash(f"Check-in adicionado para {cliente['nome']} em {data_str}", "success")
             conn.close()
@@ -206,18 +222,26 @@ def ad_checkin_limpeza_data(cliente_id):
                 break
             data_f+=f'{data_01_x[i]}/'
         data_input = f'{data_f} {data[1]}'
+        status_limpeza = False
         try:
             #Valida e formata a data
             data_formatada = datetime.strptime(data_input, "%d/%m/%Y %H:%M")
             data_str = data_formatada.strftime("%d/%m/%Y %H:%M:%S")
 
             novos_checkins = cliente['checkins_limpeza'] + 1
+            if novos_checkins >= 4:
+                status_limpeza = True
+            
+            if novos_checkins >= 6:
+                status_limpeza = False
+                novos_checkins = 0
 
             conn.execute(
                 "INSERT INTO checkins_limpeza (cliente_id, data) VALUES (?, ?)",
                 (cliente_id, data_str)
             )
             conn.execute("UPDATE clientes_limpeza SET checkins_limpeza = ? WHERE id = ?", (novos_checkins, cliente_id))
+            conn.execute("UPDATE clientes_massagem SET status_massagem = ? WHERE id = ?", (status_limpeza,cliente_id))
             conn.commit()
             flash(f"Check-in adicionado para {cliente['nome']} em {data_str}", "success")
             conn.close()
