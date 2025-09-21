@@ -137,7 +137,48 @@ def cliente_massagem(cliente_id):
     cliente = conn.execute("SELECT * FROM clientes_massagem WHERE id = ?", (cliente_id,)).fetchone()
     checkins = conn.execute("SELECT * FROM checkins_massagem WHERE cliente_id = ?", (cliente_id,))
     return render_template('cliente_massagem.html', cliente=cliente, checkins=checkins)
+
+@app.route('/adcheckindatamassagem/<int:cliente_id>', methods=['GET', 'POST'])
+def ad_checkin_massagem_data(cliente_id):
+    conn = get_db_connection()
+    agora = datetime.now().strftime("%d/%m/%Y")
+    cliente = conn.execute("SELECT * FROM clientes_massagem WHERE id = ?", (cliente_id,)).fetchone()
+    if request.method == 'POST':
+        data_input = request.form['data_checkin'].strip()
+        data = data_input.split('T')
+        data_01 = data[0].split('-')
+        data_01_x = []
+        for x in reversed(data_01):
+            data_01_x.append(x)
+        data_f = ""
+        for i in range(len(data_01_x)):
+            if i+1>=len(data_01_x):
+                data_f+=data_01_x[i]
+                break
+            data_f+=f'{data_01_x[i]}/'
+        data_input = f'{data_f} {data[1]}'
+        try:
+            #Valida e formata a data
+            data_formatada = datetime.strptime(data_input, "%d/%m/%Y %H:%M")
+            data_str = data_formatada.strftime("%d/%m/%Y %H:%M:%S")
+
+            novos_checkins = cliente['checkins_massagem'] + 1
+
+            conn.execute(
+                "INSERT INTO checkins_massagem (cliente_id, data) VALUES (?, ?)",
+                (cliente_id, data_str)
+            )
+            conn.execute("UPDATE clientes_massagem SET checkins_massagem = ? WHERE id = ?", (novos_checkins, cliente_id))
+            conn.commit()
+            flash(f"Check-in adicionado para {cliente['nome']} em {data_str}", "success")
+            conn.close()
+            return redirect(url_for('homepage_massagem'))
+        except ValueError:
+            flash("Formato inválido! Use DD/MM/AAAA HH:MM", "warning")
+    conn.close()
+    return render_template('ch_data_massagem.html', cliente=cliente, agora=agora)
     
+
 
 @app.route('/clientelimpeza/<int:cliente_id>')
 def cliente_limpeza(cliente_id):
@@ -145,6 +186,46 @@ def cliente_limpeza(cliente_id):
     cliente = conn.execute("SELECT * FROM clientes_limpeza WHERE id = ?", (cliente_id,)).fetchone()
     checkins = conn.execute("SELECT * FROM checkins_limpeza WHERE cliente_id = ?", (cliente_id,))
     return render_template('cliente_limpeza.html', cliente=cliente, checkins=checkins)
+
+@app.route('/adcheckindatalimpeza/<int:cliente_id>', methods=['GET', 'POST'])
+def ad_checkin_limpeza_data(cliente_id):
+    conn = get_db_connection()
+    agora = datetime.now().strftime("%d/%m/%Y")
+    cliente = conn.execute("SELECT * FROM clientes_limpeza WHERE id = ?", (cliente_id,)).fetchone()
+    if request.method == 'POST':
+        data_input = request.form['data_checkin'].strip()
+        data = data_input.split('T')
+        data_01 = data[0].split('-')
+        data_01_x = []
+        for x in reversed(data_01):
+            data_01_x.append(x)
+        data_f = ""
+        for i in range(len(data_01_x)):
+            if i+1>=len(data_01_x):
+                data_f+=data_01_x[i]
+                break
+            data_f+=f'{data_01_x[i]}/'
+        data_input = f'{data_f} {data[1]}'
+        try:
+            #Valida e formata a data
+            data_formatada = datetime.strptime(data_input, "%d/%m/%Y %H:%M")
+            data_str = data_formatada.strftime("%d/%m/%Y %H:%M:%S")
+
+            novos_checkins = cliente['checkins_limpeza'] + 1
+
+            conn.execute(
+                "INSERT INTO checkins_limpeza (cliente_id, data) VALUES (?, ?)",
+                (cliente_id, data_str)
+            )
+            conn.execute("UPDATE clientes_limpeza SET checkins_limpeza = ? WHERE id = ?", (novos_checkins, cliente_id))
+            conn.commit()
+            flash(f"Check-in adicionado para {cliente['nome']} em {data_str}", "success")
+            conn.close()
+            return redirect(url_for('homepage_limpeza'))
+        except ValueError:
+            flash("Formato inválido! Use DD/MM/AAAA HH:MM", "warning")
+    conn.close()
+    return render_template('ch_data_limpeza.html', cliente=cliente, agora=agora)
 
 
 @app.route('/checkinmassagem/<int:cliente_id>')
@@ -214,6 +295,7 @@ def registrar_checkin_limpeza(cliente_id):
     conn.close()
     return redirect(url_for('homepage_limpeza'))
 
+
 @app.route("/excluir_massagem/<int:cliente_id>")
 def excluir_massagem(cliente_id):
     excluir_cliente_massagem(cliente_id)
@@ -224,12 +306,16 @@ def excluir_limpeza(cliente_id):
     excluir_cliente_limpeza(cliente_id)
     return redirect(url_for("homepage_limpeza"))
 
+
+
+#função que remove check-in de cliente massagem
 @app.route("/excluircheckinmassagem/<int:checkin_id>")
 def excluir_ch_massagem(checkin_id):
     excluir_checkin_massagem(checkin_id)
     flash(f"Check-in removido!", "warning")
     return redirect(url_for("homepage_massagem"))
 
+#função que remove check-in de cliente limpeza
 @app.route("/excluircheckinlimpeza/<int:checkin_id>")
 def excluir_ch_limpeza(checkin_id):
     excluir_checkin_limpeza(checkin_id)

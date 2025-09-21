@@ -54,7 +54,12 @@ a{
 .box-btn-home{
     width: 100%;
     display: flex;
-    justify-content: start;
+    justify-content: space-between;
+    align-items: center;
+}
+.box-btn-home .box{
+    display: flex;
+    justify-content: center;
     align-items: center;
 }
 
