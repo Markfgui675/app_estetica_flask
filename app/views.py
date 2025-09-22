@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import render_template, request, redirect, url_for, flash
 from datetime import datetime
 from app import app
 
@@ -89,12 +89,21 @@ def excluir_checkin_massagem(checkin_id):
     cliente_id = conn.execute("SELECT * FROM checkins_massagem WHERE id = ?", (checkin_id,)).fetchone()['cliente_id']
     cliente = conn.execute("SELECT * FROM clientes_massagem WHERE id = ?", (cliente_id,)).fetchone()
     conn.execute("DELETE FROM checkins_massagem WHERE id = ?", (checkin_id,))
+    status_massagem = False
 
     novos_checkins = cliente['checkins_massagem']
     if novos_checkins > 0:
         novos_checkins-=1
+    
+    if novos_checkins >= 3:
+        status_massagem = True
+    
+    if novos_checkins >= 4:
+        novos_checkins = 0
+        status_massagem = False
 
     conn.execute("UPDATE clientes_massagem SET checkins_massagem = ? WHERE id = ?", (novos_checkins, cliente_id))
+    conn.execute("UPDATE clientes_massagem SET status_massagem = ? WHERE id = ?", (status_massagem,cliente_id))
     conn.commit()
     conn.close()
 
@@ -103,12 +112,21 @@ def excluir_checkin_limpeza(checkin_id):
     cliente_id = conn.execute("SELECT * FROM checkins_limpeza WHERE id = ?", (checkin_id,)).fetchone()['cliente_id']
     cliente = conn.execute("SELECT * FROM clientes_limpeza WHERE id = ?", (cliente_id,)).fetchone()
     conn.execute("DELETE FROM checkins_limpeza WHERE id = ?", (checkin_id,))
+    status_limpeza = False
 
     novos_checkins = cliente['checkins_limpeza']
     if novos_checkins > 0:
         novos_checkins-=1
+    
+    if novos_checkins >= 4:
+        status_limpeza = True
+    
+    if novos_checkins >= 5:
+        novos_checkins = 0
+        status_limpeza = False
 
     conn.execute("UPDATE clientes_limpeza SET checkins_limpeza = ? WHERE id = ?", (novos_checkins, cliente_id))
+    conn.execute("UPDATE clientes_limpeza SET status_limpeza = ? WHERE id = ?", (status_limpeza,cliente_id))
     conn.commit()
     conn.close()
 
@@ -175,7 +193,7 @@ def ad_checkin_massagem_data(cliente_id):
             if novos_checkins >= 3:
                 status_massagem = True
             
-            if novos_checkins >= 5:
+            if novos_checkins >= 4:
                 status_massagem = False
                 novos_checkins = 0
 
@@ -232,7 +250,7 @@ def ad_checkin_limpeza_data(cliente_id):
             if novos_checkins >= 4:
                 status_limpeza = True
             
-            if novos_checkins >= 6:
+            if novos_checkins >= 5:
                 status_limpeza = False
                 novos_checkins = 0
 
