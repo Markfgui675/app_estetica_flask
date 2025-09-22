@@ -1,5 +1,4 @@
 import sqlite3
-from datetime import datetime
 
 # Função para conexão com banco
 def get_db_connection():
@@ -25,7 +24,8 @@ def init_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT NOT NULL,
         status_limpeza BOOLEAN DEFAULT FALSE,
-        checkins_limpeza INTEGER DEFAULT 0
+        checkins_limpeza INTEGER DEFAULT 0,
+        historico_agendamento TEXT
     )
     ''')
 
@@ -46,5 +46,6 @@ def init_db():
         FOREIGN KEY(cliente_id) REFERENCES clientes(id)
     )
     ''')
+
     conn.commit()
     conn.close()
