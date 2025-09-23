@@ -7,8 +7,6 @@ def adicionar_cliente(nome):
     conn.commit()
     conn.close()
 
-
-
 def excluir_cliente(cliente_id):
     conn = get_db_connection()
     conn.execute("DELETE FROM clientes_massagem WHERE id = ?", (cliente_id,))
@@ -38,5 +36,14 @@ def excluir_checkin(checkin_id):
 
     conn.execute("UPDATE clientes_massagem SET checkins_massagem = ? WHERE id = ?", (novos_checkins, cliente_id))
     conn.execute("UPDATE clientes_massagem SET status_massagem = ? WHERE id = ?", (status_massagem,cliente_id))
+    conn.commit()
+    conn.close()
+
+
+def zera_checkin(cliente_id):
+    '''reinicia a contagem dos histórico de check-ins'''
+
+    conn = get_db_connection()
+    conn.execute("DELETE FROM checkins_massagem WHERE cliente_id = ?", (cliente_id,))
     conn.commit()
     conn.close()

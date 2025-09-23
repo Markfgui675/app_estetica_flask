@@ -50,6 +50,7 @@ def ad_checkin_massagem_data(cliente_id):
             if novos_checkins >= 4:
                 status_massagem = False
                 novos_checkins = 0
+                massagem.zera_checkin(cliente_id)
 
             conn.execute(
                 "INSERT INTO checkins_massagem (cliente_id, data) VALUES (?, ?)",
@@ -90,12 +91,13 @@ def registrar_checkin_massagem(cliente_id):
         if novos_checkins >= 4:
             status_massagem = False
             novos_checkins = 0
+            massagem.zera_checkin(cliente_id)
+        
 
-    
-        conn.execute("UPDATE clientes_massagem SET checkins_massagem = ? WHERE id = ?", (novos_checkins, cliente_id))
-        conn.execute("UPDATE clientes_massagem SET status_massagem = ? WHERE id = ?", (status_massagem,cliente_id))
         conn.execute("INSERT INTO checkins_massagem (cliente_id, data) VALUES (?, ?)",
                         (cliente_id, datetime.now().strftime("%d/%m/%Y %H:%M:%S")))
+        conn.execute("UPDATE clientes_massagem SET checkins_massagem = ? WHERE id = ?", (novos_checkins, cliente_id))
+        conn.execute("UPDATE clientes_massagem SET status_massagem = ? WHERE id = ?", (status_massagem,cliente_id))
         conn.commit()
     conn.close()
     return redirect(url_for('homepage_massagem'))

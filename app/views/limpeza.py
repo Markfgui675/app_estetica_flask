@@ -51,6 +51,7 @@ def ad_checkin_limpeza_data(cliente_id):
             if novos_checkins >= 5:
                 status_limpeza = False
                 novos_checkins = 0
+                limpeza.zera_checkin(cliente_id)
 
             conn.execute(
                 "INSERT INTO checkins_limpeza (cliente_id, data) VALUES (?, ?)",
@@ -91,6 +92,7 @@ def registrar_checkin_limpeza(cliente_id):
         if novos_checkins >= 5:
             status_limpeza = False
             novos_checkins = 0
+            limpeza.zera_checkin(cliente_id)
         
         conn.execute("UPDATE clientes_limpeza SET checkins_limpeza = ? WHERE id = ?", (novos_checkins, cliente_id))
         conn.execute("UPDATE clientes_limpeza SET status_limpeza = ? WHERE id = ?", (status_limpeza,cliente_id))

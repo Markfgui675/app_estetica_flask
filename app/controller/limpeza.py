@@ -35,3 +35,11 @@ def excluir_checkin(checkin_id):
     conn.execute("UPDATE clientes_limpeza SET status_limpeza = ? WHERE id = ?", (status_limpeza,cliente_id))
     conn.commit()
     conn.close()
+
+def zera_checkin(cliente_id):
+    '''reinicia a contagem dos histórico de check-ins'''
+
+    conn = get_db_connection()
+    conn.execute("DELETE FROM checkins_limpeza WHERE cliente_id = ?", (cliente_id,))
+    conn.commit()
+    conn.close()
