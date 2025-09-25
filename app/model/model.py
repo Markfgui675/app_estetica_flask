@@ -118,7 +118,7 @@ def init_db():
 
     #historico_agendamento
     conn.execute('''
-    CREATE TABLE IF NOT EXISTS historico_agendamento (
+    CREATE TABLE IF NOT EXISTS historico_agendamento_massagem (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         cliente_id INTEGER,
         data DATETIME,

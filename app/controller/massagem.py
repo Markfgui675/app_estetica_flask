@@ -15,7 +15,6 @@ def excluir_cliente(cliente_id):
     conn.close()
 
 
-
 def excluir_checkin(checkin_id):
     conn = get_db_connection()
     cliente_id = conn.execute("SELECT * FROM checkin_massagem WHERE id = ?", (checkin_id,)).fetchone()['cliente_id']
@@ -45,5 +44,17 @@ def zera_checkin(cliente_id):
 
     conn = get_db_connection()
     conn.execute("DELETE FROM checkin_massagem WHERE cliente_id = ?", (cliente_id,))
+    conn.commit()
+    conn.close()
+
+def adicionar_agendamento(cliente_id, data):
+    conn = get_db_connection()
+    conn.execute("INSERT INTO historico_agendamento_massagem (cliente_id, data) VALUES (?,?)", (cliente_id, data))
+    conn.commit()
+    conn.close()
+
+def excluir_agendamento(data_id):
+    conn = get_db_connection()
+    conn.execute("DELETE FROM historico_agendamento_massagem WHERE id = ?", (data_id,))
     conn.commit()
     conn.close()
