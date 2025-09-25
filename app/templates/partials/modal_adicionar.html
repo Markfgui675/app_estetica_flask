@@ -1,0 +1,27 @@
+<!-- Modal Adicionar-->
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+            <span style="cursor: pointer;" class="close" id="closeModal">&times;</span>
+            <div class="modal-header">Novo Cliente</div>
+
+            <form action="/adicionar" method="post" class="form-adicionar">
+                <div class="mb-3">
+                    <label for="nome" class="form-label">Nome do cliente:</label>
+                    <input type="text" class="form-control" id="nome" name="nome" required>
+                </div>
+                <!-- Caixinha de seleção -->
+                <div class="mb-3">
+                    <label for="servico" class="form-label">Serviço:</label>
+                    <select class="form-select" id="servico" name="servico" required>
+                    <option value="" disabled selected>Selecione um serviço...</option>
+                    <option value="Massagem">Massagem</option>
+                    <option value="Limpeza de pele">Limpeza de pele</option>
+                    <option value="Ventosa">Ventosa</option>
+                    <option value="Flacidez">Flacidez</option>
+                    <option value="Endermo">Endermo</option>
+                    <option value="Detox">Detox</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success">Salvar</button>
+            </form>
+        </div>

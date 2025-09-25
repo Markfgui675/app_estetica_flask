@@ -19,23 +19,15 @@
 
         <!--Seção de botões-->
         <div class="nav">
-            <a href="/" class="active">Massagem</a>
+            <a href="/" >Massagem</a>
             <a href="/limpeza">Limpeza de Pele</a>
-            <a href="">Detox</a>
-            <a href="">Endermo</a>
-            <a href="">Ventosa</a>
-            <a href="">Flacidez</a>
+            <a href="/detox" class="active">Detox</a>
+            <a href="/endermo">Endermo</a>
+            <a href="/ventosa">Ventosa</a>
+            <a href="/flacidez">Flacidez</a>
         </div>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">
-                    {{ message }}
-                </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+        {% include "partials/flash_message.html" %}
 
         <table class="table table-bordered">
             <thead>
@@ -48,18 +40,18 @@
                 </tr>
             </thead>
             <tbody>
-                {% for cliente in clientes_massagem %}
+                {% for cliente in clientes_detox %}
                 <tr>
                 <td>{{ cliente.id }}</td>
-                <td><a href="/clientemassagem/{{cliente.id}}">{{ cliente.nome }}</a></td>
-                {% if cliente.status_massagem %}
+                <td><a href="/clientedetox/{{cliente.id}}">{{ cliente.nome }}</a></td>
+                {% if cliente.status_detox %}
                     <td><a class="agendar" href="https://app.tecnofit.com.br/ng/calendar/week" target="_blank">Agendar</a></td>
                 {% else %}
                     <td>Não Apto</td>
                 {% endif %}
-                <td>{{ cliente.checkins_massagem }}</td>
+                <td>{{ cliente.checkins_detox }}</td>
                 <td>
-                    <a href="/checkinmassagem/{{ cliente.id }}" class="btn btn-success btn-sm">+ Check-in</a>
+                    <a href="/checkindetox/{{ cliente.id }}" class="btn btn-success btn-sm">+ Check-in</a>
                 </td>
                 </tr>
                 {% endfor %}
@@ -80,29 +72,7 @@
 
 
 
-        <!-- Modal Adicionar-->
-        <div id="myModal" class="modal">
-            <div class="modal-content">
-            <span style="cursor: pointer;" class="close" id="closeModal">&times;</span>
-            <div class="modal-header">Novo Cliente</div>
-
-            <form action="/adicionar" method="post" class="form-adicionar">
-                <div class="mb-3">
-                    <label for="nome" class="form-label">Nome do cliente:</label>
-                    <input type="text" class="form-control" id="nome" name="nome" required>
-                </div>
-                <!-- Caixinha de seleção -->
-                <div class="mb-3">
-                    <label for="servico" class="form-label">Serviço:</label>
-                    <select class="form-select" id="servico" name="servico" required>
-                    <option value="" disabled selected>Selecione um serviço...</option>
-                    <option value="Massagem">Massagem</option>
-                    <option value="Limpeza de pele">Limpeza de pele</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-success">Salvar</button>
-            </form>
-        </div>
+        {% include "partials/modal_adicionar.html" %}
 
     </div>
 

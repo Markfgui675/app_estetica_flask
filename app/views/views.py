@@ -2,9 +2,13 @@ from flask import render_template, request, redirect, url_for, flash
 from datetime import datetime
 from app import app
 from app.model.model import get_db_connection, init_db
-from app.controller import limpeza, massagem
+from app.controller import limpeza, massagem, detox, ventosa, flacidez, endermo
 from app.views.massagem import *
 from app.views.limpeza import *
+from app.views.detox import *
+from app.views.endermo import *
+from app.views.ventosa import *
+from app.views.flacidez import *
 
 init_db()
 
@@ -19,5 +23,16 @@ def adicionar_cliente():
     elif tipo.lower() == 'Massagem'.lower():
         massagem.adicionar_cliente(nome)
         return redirect(url_for('homepage_massagem'))
-
+    elif tipo.lower() == 'Detox'.lower():
+        detox.adicionar_cliente(nome)
+        return redirect(url_for('homepage_detox'))
+    elif tipo.lower() == 'Ventosa'.lower():
+        ventosa.adicionar_cliente(nome)
+        return redirect(url_for('homepage_ventosa'))
+    elif tipo.lower() == 'Flacidez'.lower():
+        flacidez.adicionar_cliente(nome)
+        return redirect(url_for('homepage_flacidez'))
+    elif tipo.lower() == 'Endermo'.lower():
+        endermo.adicionar_cliente(nome)
+        return redirect(url_for('homepage_endermo'))
 

@@ -15,7 +15,7 @@
         </h1>
 
         <div class="box-btn-home">
-            <div class="box"><a href="/" class="btn btn-primary btn-home">&#x2190</a>
+            <div class="box"><a href="/limpeza" class="btn btn-primary btn-home">&#x2190</a>
             <p>Voltar ao início</p></div>
             <a href="/adcheckindatalimpeza/{{cliente.id}}" class="btn btn-primary btn-home">+ check-in data</a>
         </div>
@@ -27,15 +27,7 @@
         <!-- Botão que abre o modal -->
         <button class="btn btn-primary btn-remover" id="openModal">Remover Cliente</button>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">
-                    {{ message }}
-                </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+        {% include "partials/flash_message.html" %}
 
         <table class="table table-bordered table-checkin">
             <thead>

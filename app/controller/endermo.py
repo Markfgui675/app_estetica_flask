@@ -27,10 +27,10 @@ def excluir_checkin(checkin_id):
     if novos_checkins > 0:
         novos_checkins-=1
     
-    if novos_checkins >= 3:
+    if novos_checkins >= 5:
         status_endermo = True
     
-    if novos_checkins >= 4:
+    if novos_checkins >= 6:
         novos_checkins = 0
         status_endermo = False
 

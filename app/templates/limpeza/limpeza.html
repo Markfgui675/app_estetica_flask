@@ -21,21 +21,13 @@
         <div class="nav">
             <a href="/">Massagem</a>
             <a href="/limpeza" class="active">Limpeza de Pele</a>
-            <a href="">Detox</a>
-            <a href="">Endermo</a>
-            <a href="">Ventosa</a>
-            <a href="">Flacidez</a>
+            <a href="/detox">Detox</a>
+            <a href="/endermo">Endermo</a>
+            <a href="/ventosa">Ventosa</a>
+            <a href="/flacidez">Flacidez</a>
         </div>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                <div class="alert alert-{{ category }}">
-                    {{ message }}
-                </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+        {% include "partials/flash_message.html" %}
 
         <table class="table table-bordered">
             <thead>
@@ -80,28 +72,8 @@
 
 
 
-        <!-- Modal -->
-        <div id="myModal" class="modal">
-            <div class="modal-content">
-            <span style="cursor: pointer;" class="close" id="closeModal">&times;</span>
-            <div class="modal-header">Novo Cliente</div>
+        {% include "partials/modal_adicionar.html" %}
 
-            <form action="/adicionar" method="post" class="form-adicionar">
-                <div class="mb-3">
-                    <label for="nome" class="form-label">Nome do cliente:</label>
-                    <input type="text" class="form-control" id="nome" name="nome" required>
-                </div>
-                <!-- Caixinha de seleção -->
-                <div class="mb-3">
-                    <label for="servico" class="form-label">Serviço:</label>
-                    <select class="form-select" id="servico" name="servico" required>
-                    <option value="Massagem">Massagem</option>
-                    <option value="Limpeza de pele">Limpeza de pele</option>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-success">Salvar</button>
-            </form>
-        </div>
     </div>
 
     <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
