@@ -8,59 +8,44 @@ from app.controller import flacidez
 @app.route("/flacidez")
 def homepage_flacidez():
     conn = get_db_connection()
-    clientes_flacidez = conn.execute('SELECT * FROM clientes_flacidez ORDER BY nome ASC').fetchall()
+    cliente_flacidez = conn.execute('SELECT * FROM cliente_flacidez ORDER BY nome ASC').fetchall()
     conn.close()
-    return render_template('flacidez/flacidez.html', clientes_flacidez=clientes_flacidez)
+    return render_template('flacidez/flacidez.html', cliente_flacidez=cliente_flacidez)
 
 @app.route('/clienteflacidez/<int:cliente_id>')
 def cliente_flacidez(cliente_id):
     conn = get_db_connection()
-    cliente = conn.execute("SELECT * FROM clientes_flacidez WHERE id = ?", (cliente_id,)).fetchone()
-    checkins = conn.execute("SELECT * FROM checkins_flacidez WHERE cliente_id = ? ORDER BY data DESC", (cliente_id,))
+    cliente = conn.execute("SELECT * FROM cliente_flacidez WHERE id = ?", (cliente_id,)).fetchone()
+    checkins = conn.execute("SELECT * FROM checkin_flacidez WHERE cliente_id = ? ORDER BY data DESC", (cliente_id,))
     return render_template('flacidez/cliente_flacidez.html', cliente=cliente, checkins=checkins)
 
 @app.route('/adcheckindataflacidez/<int:cliente_id>', methods=['GET', 'POST'])
 def ad_checkin_flacidez_data(cliente_id):
     conn = get_db_connection()
     agora = datetime.now().strftime("%d/%m/%Y")
-    cliente = conn.execute("SELECT * FROM clientes_flacidez WHERE id = ?", (cliente_id,)).fetchone()
+    cliente = conn.execute("SELECT * FROM cliente_flacidez WHERE id = ?", (cliente_id,)).fetchone()
     if request.method == 'POST':
         data_input = request.form['data_checkin'].strip()
-        data = data_input.split('T')
-        data_01 = data[0].split('-')
-        data_01_x = []
-        for x in reversed(data_01):
-            data_01_x.append(x)
-        data_f = ""
-        for i in range(len(data_01_x)):
-            if i+1>=len(data_01_x):
-                data_f+=data_01_x[i]
-                break
-            data_f+=f'{data_01_x[i]}/'
-        data_input = f'{data_f} {data[1]}'
-        status_flacidez = False
+        status = False
         try:
-            #Valida e formata a data
-            data_formatada = datetime.strptime(data_input, "%d/%m/%Y %H:%M")
-            data_str = data_formatada.strftime("%d/%m/%Y %H:%M:%S")
 
-            novos_checkins = cliente['checkins_flacidez'] + 1
+            novos_checkins = cliente['checkins'] + 1
             if novos_checkins >= 5:
-                status_flacidez = True
+                status = True
             
             if novos_checkins >= 6:
-                status_flacidez = False
+                status = False
                 novos_checkins = 0
                 flacidez.zera_checkin(cliente_id)
 
             conn.execute(
-                "INSERT INTO checkins_flacidez (cliente_id, data) VALUES (?, ?)",
-                (cliente_id, data_str)
+                "INSERT INTO checkin_flacidez (cliente_id, data) VALUES (?, ?)",
+                (cliente_id, data_input)
             )
-            conn.execute("UPDATE clientes_flacidez SET checkins_flacidez = ? WHERE id = ?", (novos_checkins, cliente_id))
-            conn.execute("UPDATE clientes_flacidez SET status_flacidez = ? WHERE id = ?", (status_flacidez,cliente_id))
+            conn.execute("UPDATE cliente_flacidez SET checkins = ? WHERE id = ?", (novos_checkins, cliente_id))
+            conn.execute("UPDATE cliente_flacidez SET status = ? WHERE id = ?", (status,cliente_id))
             conn.commit()
-            flash(f"Check-in adicionado para {cliente['nome']} em {data_str}", "success")
+            flash(f"Check-in adicionado para {cliente['nome']} em {data_input}", "success")
             conn.close()
             return redirect(url_for('homepage_flacidez'))
         except ValueError:
@@ -71,25 +56,25 @@ def ad_checkin_flacidez_data(cliente_id):
 @app.route('/checkinflacidez/<int:cliente_id>')
 def registrar_checkin_flacidez(cliente_id):
     conn = get_db_connection()
-    cliente = conn.execute("SELECT * FROM clientes_flacidez WHERE id = ?", (cliente_id,)).fetchone()
-    status_flacidez = False
+    cliente = conn.execute("SELECT * FROM cliente_flacidez WHERE id = ?", (cliente_id,)).fetchone()
+    status = False
 
     if cliente:
 
         
-        novos_checkins = cliente['checkins_flacidez'] +1
+        novos_checkins = cliente['checkins'] +1
         if novos_checkins >= 5:
-            status_flacidez = True
+            status = True
         
         if novos_checkins >= 6:
-            status_flacidez = False
+            status = False
             novos_checkins = 0
             flacidez.zera_checkin(cliente_id)
         
-        conn.execute("UPDATE clientes_flacidez SET checkins_flacidez = ? WHERE id = ?", (novos_checkins, cliente_id))
-        conn.execute("UPDATE clientes_flacidez SET status_flacidez = ? WHERE id = ?", (status_flacidez,cliente_id))
-        conn.execute("INSERT INTO checkins_flacidez (cliente_id, data) VALUES (?, ?)",
-                        (cliente_id, datetime.now().strftime("%d/%m/%Y %H:%M:%S")))
+        conn.execute("UPDATE cliente_flacidez SET checkins = ? WHERE id = ?", (novos_checkins, cliente_id))
+        conn.execute("UPDATE cliente_flacidez SET status = ? WHERE id = ?", (status,cliente_id))
+        conn.execute("INSERT INTO checkin_flacidez (cliente_id, data) VALUES (?, ?)",
+                        (cliente_id, datetime.now()))
         conn.commit()
     conn.close()
     return redirect(url_for('homepage_flacidez'))

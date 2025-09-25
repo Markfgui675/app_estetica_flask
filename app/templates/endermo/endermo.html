@@ -39,15 +39,15 @@
                 </tr>
             </thead>
             <tbody>
-                {% for cliente in clientes_endermo %}
+                {% for cliente in cliente_endermo %}
                 <tr>
                 <td><a href="/clienteendermo/{{cliente.id}}">{{ cliente.nome }}</a></td>
-                {% if cliente.status_endermo %}
+                {% if cliente.status %}
                     <td><a class="agendar" href="https://app.tecnofit.com.br/ng/calendar/week" target="_blank">Agendar</a></td>
                 {% else %}
                     <td>Não Apto</td>
                 {% endif %}
-                <td>{{ cliente.checkins_endermo }}</td>
+                <td>{{ cliente.checkins }}</td>
                 <td>
                     <a href="/checkinendermo/{{ cliente.id }}" class="btn btn-success btn-sm">+ Check-in</a>
                 </td>
