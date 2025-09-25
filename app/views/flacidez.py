@@ -8,7 +8,7 @@ from app.controller import flacidez
 @app.route("/flacidez")
 def homepage_flacidez():
     conn = get_db_connection()
-    clientes_flacidez = conn.execute('SELECT * FROM clientes_flacidez').fetchall()
+    clientes_flacidez = conn.execute('SELECT * FROM clientes_flacidez ORDER BY nome ASC').fetchall()
     conn.close()
     return render_template('flacidez/flacidez.html', clientes_flacidez=clientes_flacidez)
 
@@ -16,7 +16,7 @@ def homepage_flacidez():
 def cliente_flacidez(cliente_id):
     conn = get_db_connection()
     cliente = conn.execute("SELECT * FROM clientes_flacidez WHERE id = ?", (cliente_id,)).fetchone()
-    checkins = conn.execute("SELECT * FROM checkins_flacidez WHERE cliente_id = ?", (cliente_id,))
+    checkins = conn.execute("SELECT * FROM checkins_flacidez WHERE cliente_id = ? ORDER BY data DESC", (cliente_id,))
     return render_template('flacidez/cliente_flacidez.html', cliente=cliente, checkins=checkins)
 
 @app.route('/adcheckindataflacidez/<int:cliente_id>', methods=['GET', 'POST'])

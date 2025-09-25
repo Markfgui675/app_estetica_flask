@@ -8,7 +8,7 @@ from app.controller import limpeza
 @app.route("/limpeza")
 def homepage_limpeza():
     conn = get_db_connection()
-    clientes_limpeza = conn.execute('SELECT * FROM clientes_limpeza').fetchall()
+    clientes_limpeza = conn.execute('SELECT * FROM clientes_limpeza ORDER BY nome ASC').fetchall()
     conn.close()
     return render_template('limpeza/limpeza.html', clientes_limpeza=clientes_limpeza)
 
@@ -16,7 +16,7 @@ def homepage_limpeza():
 def cliente_limpeza(cliente_id):
     conn = get_db_connection()
     cliente = conn.execute("SELECT * FROM clientes_limpeza WHERE id = ?", (cliente_id,)).fetchone()
-    checkins = conn.execute("SELECT * FROM checkins_limpeza WHERE cliente_id = ?", (cliente_id,))
+    checkins = conn.execute("SELECT * FROM checkins_limpeza WHERE cliente_id = ? ORDER BY data DESC", (cliente_id,))
     return render_template('limpeza/cliente_limpeza.html', cliente=cliente, checkins=checkins)
 
 @app.route('/adcheckindatalimpeza/<int:cliente_id>', methods=['GET', 'POST'])

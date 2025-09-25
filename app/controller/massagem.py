@@ -3,14 +3,14 @@ from app.model.model import get_db_connection
 
 def adicionar_cliente(nome):
     conn = get_db_connection()
-    conn.execute("INSERT INTO clientes_massagem (nome, status_massagem, checkins_massagem) VALUES (?, 0, 0)", (nome,))
+    conn.execute("INSERT INTO clientes_massagem (nome, status_massagem, checkins_massagem1) VALUES (?, 0, 0)", (nome,))
     conn.commit()
     conn.close()
 
 def excluir_cliente(cliente_id):
     conn = get_db_connection()
     conn.execute("DELETE FROM clientes_massagem WHERE id = ?", (cliente_id,))
-    conn.execute("DELETE FROM checkins_massagem WHERE cliente_id = ?", (cliente_id,))
+    conn.execute("DELETE FROM checkins_massagem1 WHERE cliente_id = ?", (cliente_id,))
     conn.commit()
     conn.close()
 
@@ -18,9 +18,9 @@ def excluir_cliente(cliente_id):
 
 def excluir_checkin(checkin_id):
     conn = get_db_connection()
-    cliente_id = conn.execute("SELECT * FROM checkins_massagem WHERE id = ?", (checkin_id,)).fetchone()['cliente_id']
+    cliente_id = conn.execute("SELECT * FROM checkins_massagem1 WHERE id = ?", (checkin_id,)).fetchone()['cliente_id']
     cliente = conn.execute("SELECT * FROM clientes_massagem WHERE id = ?", (cliente_id,)).fetchone()
-    conn.execute("DELETE FROM checkins_massagem WHERE id = ?", (checkin_id,))
+    conn.execute("DELETE FROM checkins_massagem1 WHERE id = ?", (checkin_id,))
     status_massagem = False
 
     novos_checkins = cliente['checkins_massagem']
@@ -44,6 +44,6 @@ def zera_checkin(cliente_id):
     '''reinicia a contagem dos histórico de check-ins'''
 
     conn = get_db_connection()
-    conn.execute("DELETE FROM checkins_massagem WHERE cliente_id = ?", (cliente_id,))
+    conn.execute("DELETE FROM checkins_massagem1 WHERE cliente_id = ?", (cliente_id,))
     conn.commit()
     conn.close()

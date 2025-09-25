@@ -8,7 +8,7 @@ from app.controller import ventosa
 @app.route("/ventosa")
 def homepage_ventosa():
     conn = get_db_connection()
-    clientes_ventosa = conn.execute('SELECT * FROM clientes_ventosa').fetchall()
+    clientes_ventosa = conn.execute('SELECT * FROM clientes_ventosa ORDER BY nome ASC').fetchall()
     conn.close()
     return render_template('ventosa/ventosa.html', clientes_ventosa=clientes_ventosa)
 
@@ -16,7 +16,7 @@ def homepage_ventosa():
 def cliente_ventosa(cliente_id):
     conn = get_db_connection()
     cliente = conn.execute("SELECT * FROM clientes_ventosa WHERE id = ?", (cliente_id,)).fetchone()
-    checkins = conn.execute("SELECT * FROM checkins_ventosa WHERE cliente_id = ?", (cliente_id,))
+    checkins = conn.execute("SELECT * FROM checkins_ventosa WHERE cliente_id = ? ORDER BY data DESC", (cliente_id,))
     return render_template('ventosa/cliente_ventosa.html', cliente=cliente, checkins=checkins)
 
 @app.route('/adcheckindataventosa/<int:cliente_id>', methods=['GET', 'POST'])

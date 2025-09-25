@@ -8,7 +8,7 @@ from app.controller import endermo
 @app.route("/endermo")
 def homepage_endermo():
     conn = get_db_connection()
-    clientes_endermo = conn.execute('SELECT * FROM clientes_endermo').fetchall()
+    clientes_endermo = conn.execute('SELECT * FROM clientes_endermo ORDER BY nome ASC').fetchall()
     conn.close()
     return render_template('endermo/endermo.html', clientes_endermo=clientes_endermo)
 
@@ -16,7 +16,7 @@ def homepage_endermo():
 def cliente_endermo(cliente_id):
     conn = get_db_connection()
     cliente = conn.execute("SELECT * FROM clientes_endermo WHERE id = ?", (cliente_id,)).fetchone()
-    checkins = conn.execute("SELECT * FROM checkins_endermo WHERE cliente_id = ?", (cliente_id,))
+    checkins = conn.execute("SELECT * FROM checkins_endermo WHERE cliente_id = ? ORDER BY data DESC", (cliente_id,))
     return render_template('endermo/cliente_endermo.html', cliente=cliente, checkins=checkins)
 
 @app.route('/adcheckindataendermo/<int:cliente_id>', methods=['GET', 'POST'])

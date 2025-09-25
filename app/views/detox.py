@@ -8,7 +8,7 @@ from app.controller import detox
 @app.route("/detox")
 def homepage_detox():
     conn = get_db_connection()
-    clientes_detox = conn.execute('SELECT * FROM clientes_detox').fetchall()
+    clientes_detox = conn.execute('SELECT * FROM clientes_detox ORDER BY nome ASC').fetchall()
     conn.close()
     return render_template('detox/detox.html', clientes_detox=clientes_detox)
 
@@ -16,7 +16,7 @@ def homepage_detox():
 def cliente_detox(cliente_id):
     conn = get_db_connection()
     cliente = conn.execute("SELECT * FROM clientes_detox WHERE id = ?", (cliente_id,)).fetchone()
-    checkins = conn.execute("SELECT * FROM checkins_detox WHERE cliente_id = ?", (cliente_id,))
+    checkins = conn.execute("SELECT * FROM checkins_detox WHERE cliente_id = ? ORDER BY data DESC", (cliente_id,))
     return render_template('detox/cliente_detox.html', cliente=cliente, checkins=checkins)
 
 @app.route('/adcheckindatadetox/<int:cliente_id>', methods=['GET', 'POST'])

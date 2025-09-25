@@ -12,56 +12,51 @@ def init_db():
 
     #clientes
     conn.execute('''
-    CREATE TABLE IF NOT EXISTS clientes_massagem (
+    CREATE TABLE IF NOT EXISTS cliente_massagem (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT NOT NULL,
-        status_massagem BOOLEAN DEFAULT FALSE,
-        checkins_massagem INTEGER DEFAULT 0
+        status BOOLEAN DEFAULT FALSE,
+        checkins INTEGER DEFAULT 0
     )
     ''')
     conn.execute('''
-    CREATE TABLE IF NOT EXISTS clientes_limpeza (
+    CREATE TABLE IF NOT EXISTS cliente_limpeza (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT NOT NULL,
-        status_limpeza BOOLEAN DEFAULT FALSE,
-        checkins_limpeza INTEGER DEFAULT 0,
-        historico_agendamento TEXT
+        status BOOLEAN DEFAULT FALSE,
+        checkins INTEGER DEFAULT 0
     )
     ''')
     conn.execute('''
-    CREATE TABLE IF NOT EXISTS clientes_ventosa (
+    CREATE TABLE IF NOT EXISTS cliente_ventosa (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT NOT NULL,
-        status_ventosa BOOLEAN DEFAULT FALSE,
-        checkins_ventosa INTEGER DEFAULT 0,
-        historico_agendamento TEXT
+        status BOOLEAN DEFAULT FALSE,
+        checkins INTEGER DEFAULT 0
     )
     ''')
     conn.execute('''
-    CREATE TABLE IF NOT EXISTS clientes_flacidez (
+    CREATE TABLE IF NOT EXISTS cliente_flacidez (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT NOT NULL,
-        status_flacidez BOOLEAN DEFAULT FALSE,
-        checkins_flacidez INTEGER DEFAULT 0,
-        historico_agendamento TEXT
+        status BOOLEAN DEFAULT FALSE,
+        checkins INTEGER DEFAULT 0
     )
     ''')
     conn.execute('''
-    CREATE TABLE IF NOT EXISTS clientes_endermo (
+    CREATE TABLE IF NOT EXISTS cliente_endermo (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT NOT NULL,
-        status_endermo BOOLEAN DEFAULT FALSE,
-        checkins_endermo INTEGER DEFAULT 0,
-        historico_agendamento TEXT
+        status BOOLEAN DEFAULT FALSE,
+        checkins INTEGER DEFAULT 0
     )
     ''')
     conn.execute('''
-    CREATE TABLE IF NOT EXISTS clientes_detox (
+    CREATE TABLE IF NOT EXISTS cliente_detox (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome TEXT NOT NULL,
-        status_detox BOOLEAN DEFAULT FALSE,
-        checkins_detox INTEGER DEFAULT 0,
-        historico_agendamento TEXT
+        status BOOLEAN DEFAULT FALSE,
+        checkins INTEGER DEFAULT 0
     )
     ''')
 
@@ -71,50 +66,62 @@ def init_db():
 
     #checkins
     conn.execute('''
-    CREATE TABLE IF NOT EXISTS checkins_massagem (
+    CREATE TABLE IF NOT EXISTS checkin_massagem (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         cliente_id INTEGER,
-        data TEXT,
+        data DATETIME,
         FOREIGN KEY(cliente_id) REFERENCES clientes(id)
     )
     ''')
     conn.execute('''
-    CREATE TABLE IF NOT EXISTS checkins_limpeza (
+    CREATE TABLE IF NOT EXISTS checkin_limpeza (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         cliente_id INTEGER,
-        data TEXT,
+        data DATETIME,
         FOREIGN KEY(cliente_id) REFERENCES clientes(id)
     )
     ''')
     conn.execute('''
-    CREATE TABLE IF NOT EXISTS checkins_ventosa (
+    CREATE TABLE IF NOT EXISTS checkin_ventosa (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         cliente_id INTEGER,
-        data TEXT,
+        data DATETIME,
         FOREIGN KEY(cliente_id) REFERENCES clientes(id)
     )
     ''')
     conn.execute('''
-    CREATE TABLE IF NOT EXISTS checkins_flacidez (
+    CREATE TABLE IF NOT EXISTS checkin_flacidez (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         cliente_id INTEGER,
-        data TEXT,
+        data DATETIME,
         FOREIGN KEY(cliente_id) REFERENCES clientes(id)
     )
     ''')
     conn.execute('''
-    CREATE TABLE IF NOT EXISTS checkins_endermo (
+    CREATE TABLE IF NOT EXISTS checkin_endermo (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         cliente_id INTEGER,
-        data TEXT,
+        data DATETIME,
         FOREIGN KEY(cliente_id) REFERENCES clientes(id)
     )
     ''')
     conn.execute('''
-    CREATE TABLE IF NOT EXISTS checkins_detox (
+    CREATE TABLE IF NOT EXISTS checkin_detox (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         cliente_id INTEGER,
-        data TEXT,
+        data DATETIME,
+        FOREIGN KEY(cliente_id) REFERENCES clientes(id)
+    )
+    ''')
+
+    
+
+    #historico_agendamento
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS historico_agendamento (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        cliente_id INTEGER,
+        data DATETIME,
         FOREIGN KEY(cliente_id) REFERENCES clientes(id)
     )
     ''')
