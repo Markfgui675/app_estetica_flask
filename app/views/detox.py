@@ -75,15 +75,7 @@ def registrar_checkin_detox(cliente_id):
     status_detox = False
 
     if cliente:
-
-        hoje = datetime.now().strftime("%d/%m/%Y")
-
-        checkin_existente = conn.execute('''SELECT * FROM checkins_detox WHERE cliente_id = ? AND data LIKE ?''', (cliente_id, f"{hoje}%")).fetchone()
-
-        if checkin_existente:
-            flash(f"O cliente {cliente['nome']} já fez check-in hoje!", "warning")
-            conn.close()
-            return redirect(url_for('homepage_detox'))
+        
         
         novos_checkins = cliente['checkins_detox'] +1
         if novos_checkins >= 3:

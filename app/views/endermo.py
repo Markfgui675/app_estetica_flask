@@ -76,14 +76,6 @@ def registrar_checkin_endermo(cliente_id):
 
     if cliente:
 
-        hoje = datetime.now().strftime("%d/%m/%Y")
-
-        checkin_existente = conn.execute('''SELECT * FROM checkins_endermo WHERE cliente_id = ? AND data LIKE ?''', (cliente_id, f"{hoje}%")).fetchone()
-
-        if checkin_existente:
-            flash(f"O cliente {cliente['nome']} já fez check-in hoje!", "warning")
-            conn.close()
-            return redirect(url_for('homepage_endermo'))
         
         novos_checkins = cliente['checkins_endermo'] +1
         if novos_checkins >= 5:

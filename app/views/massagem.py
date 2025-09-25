@@ -74,15 +74,6 @@ def registrar_checkin_massagem(cliente_id):
     status_massagem = False
 
     if cliente:
-
-        hoje = datetime.now().strftime("%d/%m/%Y")
-
-        checkin_existente = conn.execute('''SELECT * FROM checkins_massagem WHERE cliente_id = ? AND data LIKE ?''', (cliente_id, f"{hoje}%")).fetchone()
-
-        if checkin_existente:
-            flash(f"O cliente {cliente['nome']} já fez check-in hoje!", "warning")
-            conn.close()
-            return redirect(url_for('homepage_massagem'))
         
         novos_checkins = cliente['checkins_massagem'] + 1
         if novos_checkins >= 3:
