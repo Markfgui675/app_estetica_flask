@@ -8,59 +8,47 @@ from app.controller import endermo
 @app.route("/endermo")
 def homepage_endermo():
     conn = get_db_connection()
-    clientes_endermo = conn.execute('SELECT * FROM clientes_endermo').fetchall()
+    cliente_endermo = conn.execute('SELECT * FROM cliente_endermo ORDER BY nome ASC').fetchall()
     conn.close()
-    return render_template('endermo/endermo.html', clientes_endermo=clientes_endermo)
+    return render_template('endermo/endermo.html', cliente_endermo=cliente_endermo)
 
 @app.route('/clienteendermo/<int:cliente_id>')
 def cliente_endermo(cliente_id):
     conn = get_db_connection()
-    cliente = conn.execute("SELECT * FROM clientes_endermo WHERE id = ?", (cliente_id,)).fetchone()
-    checkins = conn.execute("SELECT * FROM checkins_endermo WHERE cliente_id = ?", (cliente_id,))
-    return render_template('endermo/cliente_endermo.html', cliente=cliente, checkins=checkins)
+    cliente = conn.execute("SELECT * FROM cliente_endermo WHERE id = ?", (cliente_id,)).fetchone()
+    checkins = conn.execute("SELECT * FROM checkin_endermo WHERE cliente_id = ? ORDER BY data ASC", (cliente_id,))
+    agendamentos = conn.execute("SELECT * FROM historico_agendamento_endermo WHERE cliente_id = ? ORDER BY data ASC", (cliente_id,))
+    return render_template('endermo/cliente_endermo.html', cliente=cliente, checkins=checkins, agendamentos=agendamentos)
 
 @app.route('/adcheckindataendermo/<int:cliente_id>', methods=['GET', 'POST'])
 def ad_checkin_endermo_data(cliente_id):
     conn = get_db_connection()
     agora = datetime.now().strftime("%d/%m/%Y")
-    cliente = conn.execute("SELECT * FROM clientes_endermo WHERE id = ?", (cliente_id,)).fetchone()
+    cliente = conn.execute("SELECT * FROM cliente_endermo WHERE id = ?", (cliente_id,)).fetchone()
     if request.method == 'POST':
         data_input = request.form['data_checkin'].strip()
-        data = data_input.split('T')
-        data_01 = data[0].split('-')
-        data_01_x = []
-        for x in reversed(data_01):
-            data_01_x.append(x)
-        data_f = ""
-        for i in range(len(data_01_x)):
-            if i+1>=len(data_01_x):
-                data_f+=data_01_x[i]
-                break
-            data_f+=f'{data_01_x[i]}/'
-        data_input = f'{data_f} {data[1]}'
-        status_endermo = False
+        status = False
         try:
-            #Valida e formata a data
-            data_formatada = datetime.strptime(data_input, "%d/%m/%Y %H:%M")
-            data_str = data_formatada.strftime("%d/%m/%Y %H:%M:%S")
 
-            novos_checkins = cliente['checkins_endermo'] + 1
+            novos_checkins = cliente['checkins'] + 1
             if novos_checkins >= 5:
-                status_endermo = True
+                status = True
             
-            if novos_checkins >= 6:
-                status_endermo = False
+            if novos_checkins >= 7:
+                status = False
                 novos_checkins = 0
                 endermo.zera_checkin(cliente_id)
 
             conn.execute(
-                "INSERT INTO checkins_endermo (cliente_id, data) VALUES (?, ?)",
-                (cliente_id, data_str)
+                "INSERT INTO checkin_endermo (cliente_id, data) VALUES (?, ?)",
+                (cliente_id, data_input)
             )
-            conn.execute("UPDATE clientes_endermo SET checkins_endermo = ? WHERE id = ?", (novos_checkins, cliente_id))
-            conn.execute("UPDATE clientes_endermo SET status_endermo = ? WHERE id = ?", (status_endermo,cliente_id))
+            if novos_checkins >= 7:
+                endermo.zera_checkin(cliente_id)
+            conn.execute("UPDATE cliente_endermo SET checkins = ? WHERE id = ?", (novos_checkins, cliente_id))
+            conn.execute("UPDATE cliente_endermo SET status = ? WHERE id = ?", (status,cliente_id))
             conn.commit()
-            flash(f"Check-in adicionado para {cliente['nome']} em {data_str}", "success")
+            flash(f"Check-in adicionado para {cliente['nome']} em {data_input}", "success")
             conn.close()
             return redirect(url_for('homepage_endermo'))
         except ValueError:
@@ -71,25 +59,27 @@ def ad_checkin_endermo_data(cliente_id):
 @app.route('/checkinendermo/<int:cliente_id>')
 def registrar_checkin_endermo(cliente_id):
     conn = get_db_connection()
-    cliente = conn.execute("SELECT * FROM clientes_endermo WHERE id = ?", (cliente_id,)).fetchone()
-    status_endermo = False
+    cliente = conn.execute("SELECT * FROM cliente_endermo WHERE id = ?", (cliente_id,)).fetchone()
+    status = False
 
     if cliente:
 
         
-        novos_checkins = cliente['checkins_endermo'] +1
+        novos_checkins = cliente['checkins'] +1
         if novos_checkins >= 5:
-            status_endermo = True
+            status = True
         
-        if novos_checkins >= 6:
-            status_endermo = False
+        if novos_checkins >= 7:
+            status = False
             novos_checkins = 0
             endermo.zera_checkin(cliente_id)
         
-        conn.execute("UPDATE clientes_endermo SET checkins_endermo = ? WHERE id = ?", (novos_checkins, cliente_id))
-        conn.execute("UPDATE clientes_endermo SET status_endermo = ? WHERE id = ?", (status_endermo,cliente_id))
-        conn.execute("INSERT INTO checkins_endermo (cliente_id, data) VALUES (?, ?)",
-                        (cliente_id, datetime.now().strftime("%d/%m/%Y %H:%M:%S")))
+        conn.execute("INSERT INTO checkin_endermo (cliente_id, data) VALUES (?, ?)",
+                        (cliente_id, datetime.now()))
+        if novos_checkins >= 7:
+            endermo.zera_checkin(cliente_id)
+        conn.execute("UPDATE cliente_endermo SET checkins = ? WHERE id = ?", (novos_checkins, cliente_id))
+        conn.execute("UPDATE cliente_endermo SET status = ? WHERE id = ?", (status,cliente_id))
         conn.commit()
     conn.close()
     return redirect(url_for('homepage_endermo'))
@@ -103,4 +93,24 @@ def excluir_endermo(cliente_id):
 def excluir_ch_endermo(checkin_id):
     endermo.excluir_checkin(checkin_id)
     flash(f"Check-in removido!", "warning")
+    return redirect(url_for("homepage_endermo"))
+
+@app.route("/adicionaragendamentoendermo/<int:cliente_id>", methods=['GET', 'POST'])
+def adicionar_agendamento_endermo(cliente_id):
+    conn = get_db_connection()
+    cliente = conn.execute("SELECT * FROM cliente_endermo WHERE id = ?", (cliente_id,)).fetchone()
+    if request.method == 'POST':
+        data_input = request.form['data_checkin'].strip()
+        try:
+            endermo.adicionar_agendamento(cliente_id, data=data_input)
+            flash(f"Agendamento adicionado para {cliente['nome']} em {data_input}", "success")
+        except ValueError:
+          flash("Formato inválido! Use DD/MM/AAAA HH:MM", "warning")  
+    return render_template("endermo/agendamento.html", cliente=cliente)
+
+
+@app.route("/excluiragendamentoendermo/<int:data_id>")
+def excluir_agendamento_endermo(data_id):
+    endermo.excluir_agendamento(data_id)
+    flash(f"Agendamento removido!", "warning")
     return redirect(url_for("homepage_endermo"))

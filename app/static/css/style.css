@@ -81,3 +81,8 @@ a{
 .excludecheckin{
     color: white;
 }
+
+.green{
+    background-color: green;
+    border-color:green;
+}

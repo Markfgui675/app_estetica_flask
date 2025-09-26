@@ -8,59 +8,47 @@ from app.controller import detox
 @app.route("/detox")
 def homepage_detox():
     conn = get_db_connection()
-    clientes_detox = conn.execute('SELECT * FROM clientes_detox').fetchall()
+    cliente_detox = conn.execute('SELECT * FROM cliente_detox ORDER BY nome ASC').fetchall()
     conn.close()
-    return render_template('detox/detox.html', clientes_detox=clientes_detox)
+    return render_template('detox/detox.html', cliente_detox=cliente_detox)
 
 @app.route('/clientedetox/<int:cliente_id>')
 def cliente_detox(cliente_id):
     conn = get_db_connection()
-    cliente = conn.execute("SELECT * FROM clientes_detox WHERE id = ?", (cliente_id,)).fetchone()
-    checkins = conn.execute("SELECT * FROM checkins_detox WHERE cliente_id = ?", (cliente_id,))
-    return render_template('detox/cliente_detox.html', cliente=cliente, checkins=checkins)
+    cliente = conn.execute("SELECT * FROM cliente_detox WHERE id = ?", (cliente_id,)).fetchone()
+    checkins = conn.execute("SELECT * FROM checkin_detox WHERE cliente_id = ? ORDER BY data ASC", (cliente_id,))
+    agendamentos = conn.execute("SELECT * FROM historico_agendamento_detox WHERE cliente_id = ? ORDER BY data ASC", (cliente_id,))
+    return render_template('detox/cliente_detox.html', cliente=cliente, checkins=checkins, agendamentos=agendamentos)
 
 @app.route('/adcheckindatadetox/<int:cliente_id>', methods=['GET', 'POST'])
 def ad_checkin_detox_data(cliente_id):
     conn = get_db_connection()
     agora = datetime.now().strftime("%d/%m/%Y")
-    cliente = conn.execute("SELECT * FROM clientes_detox WHERE id = ?", (cliente_id,)).fetchone()
+    cliente = conn.execute("SELECT * FROM cliente_detox WHERE id = ?", (cliente_id,)).fetchone()
     if request.method == 'POST':
         data_input = request.form['data_checkin'].strip()
-        data = data_input.split('T')
-        data_01 = data[0].split('-')
-        data_01_x = []
-        for x in reversed(data_01):
-            data_01_x.append(x)
-        data_f = ""
-        for i in range(len(data_01_x)):
-            if i+1>=len(data_01_x):
-                data_f+=data_01_x[i]
-                break
-            data_f+=f'{data_01_x[i]}/'
-        data_input = f'{data_f} {data[1]}'
-        status_detox = False
+        status = False
         try:
-            #Valida e formata a data
-            data_formatada = datetime.strptime(data_input, "%d/%m/%Y %H:%M")
-            data_str = data_formatada.strftime("%d/%m/%Y %H:%M:%S")
 
-            novos_checkins = cliente['checkins_detox'] + 1
+            novos_checkins = cliente['checkins'] + 1
             if novos_checkins >= 3:
-                status_detox = True
+                status = True
             
-            if novos_checkins >= 4:
-                status_detox = False
+            if novos_checkins >= 5:
+                status = False
                 novos_checkins = 0
                 detox.zera_checkin(cliente_id)
 
             conn.execute(
-                "INSERT INTO checkins_detox (cliente_id, data) VALUES (?, ?)",
-                (cliente_id, data_str)
+                "INSERT INTO checkin_detox (cliente_id, data) VALUES (?, ?)",
+                (cliente_id, data_input)
             )
-            conn.execute("UPDATE clientes_detox SET checkins_detox = ? WHERE id = ?", (novos_checkins, cliente_id))
-            conn.execute("UPDATE clientes_detox SET status_detox = ? WHERE id = ?", (status_detox,cliente_id))
+            if novos_checkins >= 5:
+                detox.zera_checkin(cliente_id)
+            conn.execute("UPDATE cliente_detox SET checkins = ? WHERE id = ?", (novos_checkins, cliente_id))
+            conn.execute("UPDATE cliente_detox SET status = ? WHERE id = ?", (status,cliente_id))
             conn.commit()
-            flash(f"Check-in adicionado para {cliente['nome']} em {data_str}", "success")
+            flash(f"Check-in adicionado para {cliente['nome']} em {data_input}", "success")
             conn.close()
             return redirect(url_for('homepage_detox'))
         except ValueError:
@@ -71,25 +59,27 @@ def ad_checkin_detox_data(cliente_id):
 @app.route('/checkindetox/<int:cliente_id>')
 def registrar_checkin_detox(cliente_id):
     conn = get_db_connection()
-    cliente = conn.execute("SELECT * FROM clientes_detox WHERE id = ?", (cliente_id,)).fetchone()
-    status_detox = False
+    cliente = conn.execute("SELECT * FROM cliente_detox WHERE id = ?", (cliente_id,)).fetchone()
+    status = False
 
     if cliente:
         
         
-        novos_checkins = cliente['checkins_detox'] +1
+        novos_checkins = cliente['checkins'] +1
         if novos_checkins >= 3:
-            status_detox = True
+            status = True
         
-        if novos_checkins >= 4:
-            status_detox = False
+        if novos_checkins >= 5:
+            status = False
             novos_checkins = 0
             detox.zera_checkin(cliente_id)
         
-        conn.execute("UPDATE clientes_detox SET checkins_detox = ? WHERE id = ?", (novos_checkins, cliente_id))
-        conn.execute("UPDATE clientes_detox SET status_detox = ? WHERE id = ?", (status_detox,cliente_id))
-        conn.execute("INSERT INTO checkins_detox (cliente_id, data) VALUES (?, ?)",
-                        (cliente_id, datetime.now().strftime("%d/%m/%Y %H:%M:%S")))
+        conn.execute("INSERT INTO checkin_detox (cliente_id, data) VALUES (?, ?)",
+                        (cliente_id, datetime.now()))
+        if novos_checkins >= 5:
+            detox.zera_checkin(cliente_id)
+        conn.execute("UPDATE cliente_detox SET checkins = ? WHERE id = ?", (novos_checkins, cliente_id))
+        conn.execute("UPDATE cliente_detox SET status = ? WHERE id = ?", (status,cliente_id))
         conn.commit()
     conn.close()
     return redirect(url_for('homepage_detox'))
@@ -103,4 +93,24 @@ def excluir_detox(cliente_id):
 def excluir_ch_detox(checkin_id):
     detox.excluir_checkin(checkin_id)
     flash(f"Check-in removido!", "warning")
+    return redirect(url_for("homepage_detox"))
+
+@app.route("/adicionaragendamentodetox/<int:cliente_id>", methods=['GET', 'POST'])
+def adicionar_agendamento_detox(cliente_id):
+    conn = get_db_connection()
+    cliente = conn.execute("SELECT * FROM cliente_detox WHERE id = ?", (cliente_id,)).fetchone()
+    if request.method == 'POST':
+        data_input = request.form['data_checkin'].strip()
+        try:
+            detox.adicionar_agendamento(cliente_id, data=data_input)
+            flash(f"Agendamento adicionado para {cliente['nome']} em {data_input}", "success")
+        except ValueError:
+          flash("Formato inválido! Use DD/MM/AAAA HH:MM", "warning")  
+    return render_template("detox/agendamento.html", cliente=cliente)
+
+
+@app.route("/excluiragendamentodetox/<int:data_id>")
+def excluir_agendamento_detox(data_id):
+    detox.excluir_agendamento(data_id)
+    flash(f"Agendamento removido!", "warning")
     return redirect(url_for("homepage_detox"))

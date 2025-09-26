@@ -32,7 +32,6 @@
         <table class="table table-bordered">
             <thead>
                 <tr>
-                <th>ID</th>
                 <th>Nome</th>
                 <th>Status</th>
                 <th>Check-ins</th>
@@ -40,16 +39,15 @@
                 </tr>
             </thead>
             <tbody>
-                {% for cliente in clientes_ventosa %}
+                {% for cliente in cliente_ventosa %}
                 <tr>
-                <td>{{ cliente.id }}</td>
                 <td><a href="/clienteventosa/{{cliente.id}}">{{ cliente.nome }}</a></td>
-                {% if cliente.status_ventosa %}
+                {% if cliente.status %}
                     <td><a class="agendar" href="https://app.tecnofit.com.br/ng/calendar/week" target="_blank">Agendar</a></td>
                 {% else %}
                     <td>Não Apto</td>
                 {% endif %}
-                <td>{{ cliente.checkins_ventosa }}</td>
+                <td>{{ cliente.checkins }}</td>
                 <td>
                     <a href="/checkinventosa/{{ cliente.id }}" class="btn btn-success btn-sm">+ Check-in</a>
                 </td>
