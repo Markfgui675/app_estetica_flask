@@ -17,7 +17,10 @@
         <div class="box-btn-home">
             <div class="box"><a href="/endermo" class="btn btn-primary btn-home">&#x2190</a>
             <p>Voltar ao início</p></div>
-            <a href="/adcheckindataendermo/{{cliente.id}}" class="btn btn-primary btn-home">+ check-in data</a>
+            <div class="box">
+                <a href="/adcheckindataendermo/{{cliente.id}}" class="btn btn-primary btn-home">+ check-in data</a>
+                <a href="/adicionaragendamentoendermo/{{cliente.id}}" class="btn btn-primary btn-home green">+ agendamento</a>
+            </div>
         </div>
 
         <h2 class="mb-3">
@@ -41,6 +44,23 @@
                 <tr>
                 <td>{{ checkin.data }}</td>
                 <td><a href="/excluircheckinendermo/{{checkin.id}}" class="btn btn-primary btn-remover excludecheckin">Excluir check-in</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <table class="table table-bordered table-checkin">
+            <thead>
+                <tr>
+                <th>Últimos agendamentos</th>
+                <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in agendamentos %}
+                <tr>
+                <td>{{ a.data }}</td>
+                <td><a href="/excluiragendamentoendermo/{{a.id}}" class="btn btn-primary btn-remover excludecheckin">Excluir agendamento</a></td>
                 </tr>
                 {% endfor %}
             </tbody>

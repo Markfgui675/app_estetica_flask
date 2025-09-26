@@ -47,3 +47,15 @@ def zera_checkin(cliente_id):
     conn.execute("DELETE FROM checkin_detox WHERE cliente_id = ?", (cliente_id,))
     conn.commit()
     conn.close()
+
+def adicionar_agendamento(cliente_id, data):
+    conn = get_db_connection()
+    conn.execute("INSERT INTO historico_agendamento_detox (cliente_id, data) VALUES (?,?)", (cliente_id, data))
+    conn.commit()
+    conn.close()
+
+def excluir_agendamento(data_id):
+    conn = get_db_connection()
+    conn.execute("DELETE FROM historico_agendamento_detox WHERE id = ?", (data_id,))
+    conn.commit()
+    conn.close()

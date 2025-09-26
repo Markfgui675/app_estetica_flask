@@ -16,8 +16,9 @@ def homepage_endermo():
 def cliente_endermo(cliente_id):
     conn = get_db_connection()
     cliente = conn.execute("SELECT * FROM cliente_endermo WHERE id = ?", (cliente_id,)).fetchone()
-    checkins = conn.execute("SELECT * FROM checkin_endermo WHERE cliente_id = ? ORDER BY data DESC", (cliente_id,))
-    return render_template('endermo/cliente_endermo.html', cliente=cliente, checkins=checkins)
+    checkins = conn.execute("SELECT * FROM checkin_endermo WHERE cliente_id = ? ORDER BY data ASC", (cliente_id,))
+    agendamentos = conn.execute("SELECT * FROM historico_agendamento_endermo WHERE cliente_id = ? ORDER BY data ASC", (cliente_id,))
+    return render_template('endermo/cliente_endermo.html', cliente=cliente, checkins=checkins, agendamentos=agendamentos)
 
 @app.route('/adcheckindataendermo/<int:cliente_id>', methods=['GET', 'POST'])
 def ad_checkin_endermo_data(cliente_id):
@@ -88,4 +89,24 @@ def excluir_endermo(cliente_id):
 def excluir_ch_endermo(checkin_id):
     endermo.excluir_checkin(checkin_id)
     flash(f"Check-in removido!", "warning")
+    return redirect(url_for("homepage_endermo"))
+
+@app.route("/adicionaragendamentoendermo/<int:cliente_id>", methods=['GET', 'POST'])
+def adicionar_agendamento_endermo(cliente_id):
+    conn = get_db_connection()
+    cliente = conn.execute("SELECT * FROM cliente_endermo WHERE id = ?", (cliente_id,)).fetchone()
+    if request.method == 'POST':
+        data_input = request.form['data_checkin'].strip()
+        try:
+            endermo.adicionar_agendamento(cliente_id, data=data_input)
+            flash(f"Agendamento adicionado para {cliente['nome']} em {data_input}", "success")
+        except ValueError:
+          flash("Formato inválido! Use DD/MM/AAAA HH:MM", "warning")  
+    return render_template("endermo/agendamento.html", cliente=cliente)
+
+
+@app.route("/excluiragendamentoendermo/<int:data_id>")
+def excluir_agendamento_endermo(data_id):
+    endermo.excluir_agendamento(data_id)
+    flash(f"Agendamento removido!", "warning")
     return redirect(url_for("homepage_endermo"))

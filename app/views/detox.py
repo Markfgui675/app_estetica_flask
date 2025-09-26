@@ -16,8 +16,9 @@ def homepage_detox():
 def cliente_detox(cliente_id):
     conn = get_db_connection()
     cliente = conn.execute("SELECT * FROM cliente_detox WHERE id = ?", (cliente_id,)).fetchone()
-    checkins = conn.execute("SELECT * FROM checkin_detox WHERE cliente_id = ? ORDER BY data DESC", (cliente_id,))
-    return render_template('detox/cliente_detox.html', cliente=cliente, checkins=checkins)
+    checkins = conn.execute("SELECT * FROM checkin_detox WHERE cliente_id = ? ORDER BY data ASC", (cliente_id,))
+    agendamentos = conn.execute("SELECT * FROM historico_agendamento_detox WHERE cliente_id = ? ORDER BY data ASC", (cliente_id,))
+    return render_template('detox/cliente_detox.html', cliente=cliente, checkins=checkins, agendamentos=agendamentos)
 
 @app.route('/adcheckindatadetox/<int:cliente_id>', methods=['GET', 'POST'])
 def ad_checkin_detox_data(cliente_id):
@@ -88,4 +89,24 @@ def excluir_detox(cliente_id):
 def excluir_ch_detox(checkin_id):
     detox.excluir_checkin(checkin_id)
     flash(f"Check-in removido!", "warning")
+    return redirect(url_for("homepage_detox"))
+
+@app.route("/adicionaragendamentodetox/<int:cliente_id>", methods=['GET', 'POST'])
+def adicionar_agendamento_detox(cliente_id):
+    conn = get_db_connection()
+    cliente = conn.execute("SELECT * FROM cliente_detox WHERE id = ?", (cliente_id,)).fetchone()
+    if request.method == 'POST':
+        data_input = request.form['data_checkin'].strip()
+        try:
+            detox.adicionar_agendamento(cliente_id, data=data_input)
+            flash(f"Agendamento adicionado para {cliente['nome']} em {data_input}", "success")
+        except ValueError:
+          flash("Formato inválido! Use DD/MM/AAAA HH:MM", "warning")  
+    return render_template("detox/agendamento.html", cliente=cliente)
+
+
+@app.route("/excluiragendamentodetox/<int:data_id>")
+def excluir_agendamento_detox(data_id):
+    detox.excluir_agendamento(data_id)
+    flash(f"Agendamento removido!", "warning")
     return redirect(url_for("homepage_detox"))

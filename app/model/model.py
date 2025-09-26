@@ -125,6 +125,46 @@ def init_db():
         FOREIGN KEY(cliente_id) REFERENCES clientes(id)
     )
     ''')
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS historico_agendamento_detox (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        cliente_id INTEGER,
+        data DATETIME,
+        FOREIGN KEY(cliente_id) REFERENCES clientes(id)
+    )
+    ''')
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS historico_agendamento_endermo (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        cliente_id INTEGER,
+        data DATETIME,
+        FOREIGN KEY(cliente_id) REFERENCES clientes(id)
+    )
+    ''')
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS historico_agendamento_flacidez (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        cliente_id INTEGER,
+        data DATETIME,
+        FOREIGN KEY(cliente_id) REFERENCES clientes(id)
+    )
+    ''')
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS historico_agendamento_limpeza (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        cliente_id INTEGER,
+        data DATETIME,
+        FOREIGN KEY(cliente_id) REFERENCES clientes(id)
+    )
+    ''')
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS historico_agendamento_ventosa (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        cliente_id INTEGER,
+        data DATETIME,
+        FOREIGN KEY(cliente_id) REFERENCES clientes(id)
+    )
+    ''')
 
     conn.commit()
     conn.close()

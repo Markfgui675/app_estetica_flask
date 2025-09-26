@@ -16,8 +16,9 @@ def homepage_ventosa():
 def cliente_ventosa(cliente_id):
     conn = get_db_connection()
     cliente = conn.execute("SELECT * FROM cliente_ventosa WHERE id = ?", (cliente_id,)).fetchone()
-    checkins = conn.execute("SELECT * FROM checkin_ventosa WHERE cliente_id = ? ORDER BY data DESC", (cliente_id,))
-    return render_template('ventosa/cliente_ventosa.html', cliente=cliente, checkins=checkins)
+    checkins = conn.execute("SELECT * FROM checkin_ventosa WHERE cliente_id = ? ORDER BY data ASC", (cliente_id,))
+    agendamentos = conn.execute("SELECT * FROM historico_agendamento_ventosa WHERE cliente_id = ? ORDER BY data ASC", (cliente_id,))
+    return render_template('ventosa/cliente_ventosa.html', cliente=cliente, checkins=checkins, agendamentos=agendamentos)
 
 @app.route('/adcheckindataventosa/<int:cliente_id>', methods=['GET', 'POST'])
 def ad_checkin_ventosa_data(cliente_id):
@@ -88,4 +89,24 @@ def excluir_ventosa(cliente_id):
 def excluir_ch_ventosa(checkin_id):
     ventosa.excluir_checkin(checkin_id)
     flash(f"Check-in removido!", "warning")
+    return redirect(url_for("homepage_ventosa"))
+
+@app.route("/adicionaragendamentoventosa/<int:cliente_id>", methods=['GET', 'POST'])
+def adicionar_agendamento_ventosa(cliente_id):
+    conn = get_db_connection()
+    cliente = conn.execute("SELECT * FROM cliente_ventosa WHERE id = ?", (cliente_id,)).fetchone()
+    if request.method == 'POST':
+        data_input = request.form['data_checkin'].strip()
+        try:
+            ventosa.adicionar_agendamento(cliente_id, data=data_input)
+            flash(f"Agendamento adicionado para {cliente['nome']} em {data_input}", "success")
+        except ValueError:
+          flash("Formato inválido! Use DD/MM/AAAA HH:MM", "warning")  
+    return render_template("ventosa/agendamento.html", cliente=cliente)
+
+
+@app.route("/excluiragendamentoventosa/<int:data_id>")
+def excluir_agendamento_ventosa(data_id):
+    ventosa.excluir_agendamento(data_id)
+    flash(f"Agendamento removido!", "warning")
     return redirect(url_for("homepage_ventosa"))
