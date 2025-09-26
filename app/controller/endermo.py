@@ -23,7 +23,7 @@ def excluir_checkin(checkin_id):
     conn.execute("DELETE FROM checkin_endermo WHERE id = ?", (checkin_id,))
     status = False
 
-    novos_checkins = cliente['checkin_endermo']
+    novos_checkins = cliente['checkins']
     if novos_checkins > 0:
         novos_checkins-=1
     

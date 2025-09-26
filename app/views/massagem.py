@@ -33,7 +33,7 @@ def ad_checkin_massagem_data(cliente_id):
             if novos_checkins >= 3:
                 status = True
             
-            if novos_checkins >= 4:
+            if novos_checkins >= 5:
                 status = False
                 novos_checkins = 0
                 massagem.zera_checkin(cliente_id)
@@ -42,6 +42,8 @@ def ad_checkin_massagem_data(cliente_id):
                 "INSERT INTO checkin_massagem (cliente_id, data) VALUES (?, ?)",
                 (cliente_id, data_input)
             )
+            if novos_checkins >= 5:
+                massagem.zera_checkin(cliente_id)
             conn.execute("UPDATE cliente_massagem SET checkins = ? WHERE id = ?", (novos_checkins, cliente_id))
             conn.execute("UPDATE cliente_massagem SET status = ? WHERE id = ?", (status,cliente_id))
             conn.commit()
@@ -65,7 +67,7 @@ def registrar_checkin_massagem(cliente_id):
         if novos_checkins >= 3:
             status = True
         
-        if novos_checkins >= 4:
+        if novos_checkins >= 5:
             status = False
             novos_checkins = 0
             massagem.zera_checkin(cliente_id)
@@ -73,6 +75,8 @@ def registrar_checkin_massagem(cliente_id):
 
         conn.execute("INSERT INTO checkin_massagem (cliente_id, data) VALUES (?, ?)",
                         (cliente_id, datetime.now()))
+        if novos_checkins >= 5:
+            massagem.zera_checkin(cliente_id)
         conn.execute("UPDATE cliente_massagem SET checkins = ? WHERE id = ?", (novos_checkins, cliente_id))
         conn.execute("UPDATE cliente_massagem SET status = ? WHERE id = ?", (status,cliente_id))
         conn.commit()

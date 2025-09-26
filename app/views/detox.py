@@ -34,7 +34,7 @@ def ad_checkin_detox_data(cliente_id):
             if novos_checkins >= 3:
                 status = True
             
-            if novos_checkins >= 4:
+            if novos_checkins >= 5:
                 status = False
                 novos_checkins = 0
                 detox.zera_checkin(cliente_id)
@@ -43,6 +43,8 @@ def ad_checkin_detox_data(cliente_id):
                 "INSERT INTO checkin_detox (cliente_id, data) VALUES (?, ?)",
                 (cliente_id, data_input)
             )
+            if novos_checkins >= 5:
+                detox.zera_checkin(cliente_id)
             conn.execute("UPDATE cliente_detox SET checkins = ? WHERE id = ?", (novos_checkins, cliente_id))
             conn.execute("UPDATE cliente_detox SET status = ? WHERE id = ?", (status,cliente_id))
             conn.commit()
@@ -67,15 +69,17 @@ def registrar_checkin_detox(cliente_id):
         if novos_checkins >= 3:
             status = True
         
-        if novos_checkins >= 4:
+        if novos_checkins >= 5:
             status = False
             novos_checkins = 0
             detox.zera_checkin(cliente_id)
         
-        conn.execute("UPDATE cliente_detox SET checkins = ? WHERE id = ?", (novos_checkins, cliente_id))
-        conn.execute("UPDATE cliente_detox SET status = ? WHERE id = ?", (status,cliente_id))
         conn.execute("INSERT INTO checkin_detox (cliente_id, data) VALUES (?, ?)",
                         (cliente_id, datetime.now()))
+        if novos_checkins >= 5:
+            detox.zera_checkin(cliente_id)
+        conn.execute("UPDATE cliente_detox SET checkins = ? WHERE id = ?", (novos_checkins, cliente_id))
+        conn.execute("UPDATE cliente_detox SET status = ? WHERE id = ?", (status,cliente_id))
         conn.commit()
     conn.close()
     return redirect(url_for('homepage_detox'))
