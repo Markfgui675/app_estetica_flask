@@ -3,6 +3,7 @@ from datetime import datetime
 from app import app
 from app.model.model import get_db_connection
 from app.controller import detox
+from app.utils.data import data_br
 
 
 @app.route("/detox")
@@ -27,6 +28,7 @@ def ad_checkin_detox_data(cliente_id):
     cliente = conn.execute("SELECT * FROM cliente_detox WHERE id = ?", (cliente_id,)).fetchone()
     if request.method == 'POST':
         data_input = request.form['data_checkin'].strip()
+        databr = data_br(data_input)
         status = False
         try:
 
@@ -41,14 +43,14 @@ def ad_checkin_detox_data(cliente_id):
 
             conn.execute(
                 "INSERT INTO checkin_detox (cliente_id, data) VALUES (?, ?)",
-                (cliente_id, data_input)
+                (cliente_id, databr)
             )
             if novos_checkins >= 5:
                 detox.zera_checkin(cliente_id)
             conn.execute("UPDATE cliente_detox SET checkins = ? WHERE id = ?", (novos_checkins, cliente_id))
             conn.execute("UPDATE cliente_detox SET status = ? WHERE id = ?", (status,cliente_id))
             conn.commit()
-            flash(f"Check-in adicionado para {cliente['nome']} em {data_input}", "success")
+            flash(f"Check-in adicionado para {cliente['nome']} em {databr}", "success")
             conn.close()
             return redirect(url_for('homepage_detox'))
         except ValueError:
@@ -75,7 +77,7 @@ def registrar_checkin_detox(cliente_id):
             detox.zera_checkin(cliente_id)
         
         conn.execute("INSERT INTO checkin_detox (cliente_id, data) VALUES (?, ?)",
-                        (cliente_id, datetime.now()))
+                        (cliente_id, datetime.now().strftime("%d/%m/%Y %H:%M")))
         if novos_checkins >= 5:
             detox.zera_checkin(cliente_id)
         conn.execute("UPDATE cliente_detox SET checkins = ? WHERE id = ?", (novos_checkins, cliente_id))
@@ -103,7 +105,7 @@ def adicionar_agendamento_detox(cliente_id):
         data_input = request.form['data_checkin'].strip()
         try:
             detox.adicionar_agendamento(cliente_id, data=data_input)
-            flash(f"Agendamento adicionado para {cliente['nome']} em {data_input}", "success")
+            flash(f"Agendamento adicionado para {cliente['nome']} em {data_br(data_input)}", "success")
         except ValueError:
           flash("Formato inválido! Use DD/MM/AAAA HH:MM", "warning")  
     return render_template("detox/agendamento.html", cliente=cliente)

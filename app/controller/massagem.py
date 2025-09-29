@@ -1,4 +1,5 @@
 from app.model.model import get_db_connection
+from app.utils.data import data_br
 
 
 def adicionar_cliente(nome):
@@ -49,7 +50,8 @@ def zera_checkin(cliente_id):
 
 def adicionar_agendamento(cliente_id, data):
     conn = get_db_connection()
-    conn.execute("INSERT INTO historico_agendamento_massagem (cliente_id, data) VALUES (?,?)", (cliente_id, data))
+    databr = data_br(data)
+    conn.execute("INSERT INTO historico_agendamento_massagem (cliente_id, data) VALUES (?,?)", (cliente_id, databr))
     conn.commit()
     conn.close()
 
