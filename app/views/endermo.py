@@ -115,3 +115,12 @@ def excluir_agendamento_endermo(data_id):
     endermo.excluir_agendamento(data_id)
     flash(f"Agendamento removido!", "warning")
     return redirect(url_for("homepage_endermo"))
+
+@app.route("/busca_endermo", methods=['GET', 'POST'])
+def buscar_endermo():
+    resultados = []
+    termo = ""
+    if request.method == 'POST':
+        termo = request.form['termo'].strip()
+        resultados = endermo.buscar_clientes(termo)
+    return render_template('endermo/endermo.html', resultados=resultados)

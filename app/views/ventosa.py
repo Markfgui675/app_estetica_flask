@@ -116,3 +116,12 @@ def excluir_agendamento_ventosa(data_id):
     ventosa.excluir_agendamento(data_id)
     flash(f"Agendamento removido!", "warning")
     return redirect(url_for("homepage_ventosa"))
+
+@app.route("/busca_ventosa", methods=['GET', 'POST'])
+def buscar_ventosa():
+    resultados = []
+    termo = ""
+    if request.method == 'POST':
+        termo = request.form['termo'].strip()
+        resultados = ventosa.buscar_clientes(termo)
+    return render_template('ventosa/ventosa.html', resultados=resultados)

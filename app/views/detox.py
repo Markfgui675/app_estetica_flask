@@ -116,3 +116,12 @@ def excluir_agendamento_detox(data_id):
     detox.excluir_agendamento(data_id)
     flash(f"Agendamento removido!", "warning")
     return redirect(url_for("homepage_detox"))
+
+@app.route("/busca_detox", methods=['GET', 'POST'])
+def buscar_detox():
+    resultados = []
+    termo = ""
+    if request.method == 'POST':
+        termo = request.form['termo'].strip()
+        resultados = detox.buscar_clientes(termo)
+    return render_template('detox/detox.html', resultados=resultados)

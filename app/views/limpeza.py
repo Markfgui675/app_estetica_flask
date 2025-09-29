@@ -116,3 +116,12 @@ def excluir_agendamento_limpeza(data_id):
     limpeza.excluir_agendamento(data_id)
     flash(f"Agendamento removido!", "warning")
     return redirect(url_for("homepage_limpeza"))
+
+@app.route("/busca_limpeza", methods=['GET', 'POST'])
+def buscar_limpeza():
+    resultados = []
+    termo = ""
+    if request.method == 'POST':
+        termo = request.form['termo'].strip()
+        resultados = limpeza.buscar_clientes(termo)
+    return render_template('limpeza/limpeza.html', resultados=resultados)

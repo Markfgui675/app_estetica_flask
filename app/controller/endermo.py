@@ -60,3 +60,13 @@ def excluir_agendamento(data_id):
     conn.execute("DELETE FROM historico_agendamento_endermo WHERE id = ?", (data_id,))
     conn.commit()
     conn.close()
+
+def buscar_clientes(nome):
+    conn = get_db_connection()
+    # LIKE faz a busca parcial; LOWER evita problema de maiúsculas/minúsculas
+    clientes = conn.execute("""
+        SELECT * FROM cliente_endermo
+        WHERE LOWER(nome) LIKE ?
+    """, ('%' + nome.lower() + '%',)).fetchall()
+    conn.close()
+    return clientes

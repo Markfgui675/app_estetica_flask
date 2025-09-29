@@ -116,3 +116,12 @@ def excluir_agendamento_flacidez(data_id):
     flacidez.excluir_agendamento(data_id)
     flash(f"Agendamento removido!", "warning")
     return redirect(url_for("homepage_flacidez"))
+
+@app.route("/busca_flacidez", methods=['GET', 'POST'])
+def buscar_flacidez():
+    resultados = []
+    termo = ""
+    if request.method == 'POST':
+        termo = request.form['termo'].strip()
+        resultados = flacidez.buscar_clientes(termo)
+    return render_template('flacidez/flacidez.html', resultados=resultados)

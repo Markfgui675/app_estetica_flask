@@ -29,6 +29,39 @@
 
         {% include "partials/flash_message.html" %}
 
+        <form action="/busca_massagem" method="POST" class='form-busca'>
+            <input class="input-busca" type="text" name="termo" placeholder="Pesquisar cliente" value="{{ termo }}">
+            <button class="button-busca" type="submit">Buscar</button>
+        </form>
+
+        {% if resultados %}
+            <table class="table table-bordered">
+            <thead>
+                <tr>
+                <th>Nome</th>
+                <th>Status</th>
+                <th>Check-ins</th>
+                <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cliente in resultados %}
+                <tr>
+                <td><a href="/clientemassagem/{{cliente.id}}">{{ cliente.nome }}</a></td>
+                {% if cliente.status %}
+                    <td><a class="agendar" href="https://app.tecnofit.com.br/ng/calendar/week" target="_blank">Agendar</a></td>
+                {% else %}
+                    <td>Não Apto</td>
+                {% endif %}
+                <td>{{ cliente.checkins }}</td>
+                <td>
+                    <a href="/checkinmassagem/{{ cliente.id }}" class="btn btn-success btn-sm">+ Check-in</a>
+                </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -55,6 +88,7 @@
                 {% endfor %}
             </tbody>
         </table>
+        {% endif %}
 
 
 

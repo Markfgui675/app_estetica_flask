@@ -115,3 +115,12 @@ def excluir_agendamento_massagem(data_id):
     massagem.excluir_agendamento(data_id)
     flash(f"Agendamento removido!", "warning")
     return redirect(url_for("homepage_massagem"))
+
+@app.route("/busca_massagem", methods=['GET', 'POST'])
+def buscar_massagem():
+    resultados = []
+    termo = ""
+    if request.method == 'POST':
+        termo = request.form['termo'].strip()
+        resultados = massagem.buscar_clientes(termo)
+    return render_template('massagem/massagem.html', resultados=resultados)
