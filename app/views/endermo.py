@@ -32,10 +32,10 @@ def ad_checkin_endermo_data(cliente_id):
         try:
 
             novos_checkins = cliente['checkins'] + 1
-            if novos_checkins >= 5:
+            if novos_checkins >= 7:
                 status = True
             
-            if novos_checkins >= 7:
+            if novos_checkins >= 9:
                 status = False
                 novos_checkins = 0
                 endermo.zera_checkin(cliente_id)
@@ -44,7 +44,7 @@ def ad_checkin_endermo_data(cliente_id):
                 "INSERT INTO checkin_endermo (cliente_id, data) VALUES (?, ?)",
                 (cliente_id, databr)
             )
-            if novos_checkins >= 7:
+            if novos_checkins >= 9:
                 endermo.zera_checkin(cliente_id)
             conn.execute("UPDATE cliente_endermo SET checkins = ? WHERE id = ?", (novos_checkins, cliente_id))
             conn.execute("UPDATE cliente_endermo SET status = ? WHERE id = ?", (status,cliente_id))
@@ -67,17 +67,17 @@ def registrar_checkin_endermo(cliente_id):
 
         
         novos_checkins = cliente['checkins'] +1
-        if novos_checkins >= 5:
+        if novos_checkins >= 7:
             status = True
         
-        if novos_checkins >= 7:
+        if novos_checkins >= 9:
             status = False
             novos_checkins = 0
             endermo.zera_checkin(cliente_id)
         
         conn.execute("INSERT INTO checkin_endermo (cliente_id, data) VALUES (?, ?)",
                         (cliente_id, datetime.now().strftime("%d/%m/%Y %H:%M")))
-        if novos_checkins >= 7:
+        if novos_checkins >= 9:
             endermo.zera_checkin(cliente_id)
         conn.execute("UPDATE cliente_endermo SET checkins = ? WHERE id = ?", (novos_checkins, cliente_id))
         conn.execute("UPDATE cliente_endermo SET status = ? WHERE id = ?", (status,cliente_id))

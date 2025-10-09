@@ -27,10 +27,10 @@ def excluir_checkin(checkin_id):
     if novos_checkins > 0:
         novos_checkins-=1
     
-    if novos_checkins >= 5:
+    if novos_checkins >= 7:
         status = True
     
-    if novos_checkins >= 6:
+    if novos_checkins >= 8:
         novos_checkins = 0
         status = False
 

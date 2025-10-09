@@ -33,10 +33,10 @@ def ad_checkin_limpeza_data(cliente_id):
         try:
 
             novos_checkins = cliente['checkins'] + 1
-            if novos_checkins >= 4:
+            if novos_checkins >= 6:
                 status = True
             
-            if novos_checkins >= 6:
+            if novos_checkins >= 8:
                 status = False
                 novos_checkins = 0
                 limpeza.zera_checkin(cliente_id)
@@ -45,7 +45,7 @@ def ad_checkin_limpeza_data(cliente_id):
                 "INSERT INTO checkin_limpeza (cliente_id, data) VALUES (?, ?)",
                 (cliente_id, databr)
             )
-            if novos_checkins >= 6:
+            if novos_checkins >= 8:
                 limpeza.zera_checkin(cliente_id)
             conn.execute("UPDATE cliente_limpeza SET checkins = ? WHERE id = ?", (novos_checkins, cliente_id))
             conn.execute("UPDATE cliente_limpeza SET status = ? WHERE id = ?", (status,cliente_id))
@@ -68,17 +68,17 @@ def registrar_checkin_limpeza(cliente_id):
 
         
         novos_checkins = cliente['checkins'] +1
-        if novos_checkins >= 4:
+        if novos_checkins >= 6:
             status = True
         
-        if novos_checkins >= 6:
+        if novos_checkins >= 8:
             status = False
             novos_checkins = 0
             limpeza.zera_checkin(cliente_id)
         
         conn.execute("INSERT INTO checkin_limpeza (cliente_id, data) VALUES (?, ?)",
                         (cliente_id, datetime.now().strftime("%d/%m/%Y %H:%M")))
-        if novos_checkins >= 6:
+        if novos_checkins >= 8:
             limpeza.zera_checkin(cliente_id)
         conn.execute("UPDATE cliente_limpeza SET checkins = ? WHERE id = ?", (novos_checkins, cliente_id))
         conn.execute("UPDATE cliente_limpeza SET status = ? WHERE id = ?", (status,cliente_id))
