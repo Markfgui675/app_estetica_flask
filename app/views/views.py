@@ -1,16 +1,18 @@
-from flask import render_template, request, redirect, url_for, flash
-from datetime import datetime
+from flask import request, redirect, url_for
 from app import app
-from app.model.model import get_db_connection, init_db
+from app.model.model import init_db
 from app.controller import limpeza, massagem, detox, ventosa, flacidez, endermo
+from app.controller import config as configuracoes
 from app.views.massagem import *
 from app.views.limpeza import *
 from app.views.detox import *
 from app.views.endermo import *
 from app.views.ventosa import *
 from app.views.flacidez import *
+from app.views.config import *
 
 init_db()
+configuracoes.init()
 
 
 @app.route('/adicionar', methods=['POST'])

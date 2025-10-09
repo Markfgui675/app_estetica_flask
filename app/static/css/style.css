@@ -88,6 +88,25 @@ a{
 }
 
 
+.modal-top{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+.button-gerencia{
+    display: inline-block;
+    text-decoration: none;
+    color: white;
+    background: #555;
+    border-color: #555;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+.button-gerencia:hover {
+    background: #777;
+    border-color: #777;
+}
 
 
 

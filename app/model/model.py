@@ -166,5 +166,42 @@ def init_db():
     )
     ''')
 
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS config_detox (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        checkin INTEGER
+    )
+    ''')
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS config_endermo (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        checkin INTEGER
+    )
+    ''')
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS config_flacidez (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        checkin INTEGER
+    )
+    ''')
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS config_limpeza (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        checkin INTEGER
+    )
+    ''')
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS config_massagem (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        checkin INTEGER
+    )
+    ''')
+    conn.execute('''
+    CREATE TABLE IF NOT EXISTS config_ventosa (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        checkin INTEGER
+    )
+    ''')
+
     conn.commit()
     conn.close()
