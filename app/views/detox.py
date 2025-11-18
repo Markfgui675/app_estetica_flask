@@ -39,14 +39,11 @@ def ad_checkin_detox_data(cliente_id):
             if novos_checkins >= 7:
                 status = False
                 novos_checkins = 0
-                detox.zera_checkin(cliente_id)
 
             conn.execute(
                 "INSERT INTO checkin_detox (cliente_id, data) VALUES (?, ?)",
                 (cliente_id, databr)
             )
-            if novos_checkins >= 7:
-                detox.zera_checkin(cliente_id)
             conn.execute("UPDATE cliente_detox SET checkins = ? WHERE id = ?", (novos_checkins, cliente_id))
             conn.execute("UPDATE cliente_detox SET status = ? WHERE id = ?", (status,cliente_id))
             conn.commit()
@@ -74,12 +71,9 @@ def registrar_checkin_detox(cliente_id):
         if novos_checkins >= 7:
             status = False
             novos_checkins = 0
-            detox.zera_checkin(cliente_id)
         
         conn.execute("INSERT INTO checkin_detox (cliente_id, data) VALUES (?, ?)",
                         (cliente_id, datetime.now().strftime("%d/%m/%Y %H:%M")))
-        if novos_checkins >= 7:
-            detox.zera_checkin(cliente_id)
         conn.execute("UPDATE cliente_detox SET checkins = ? WHERE id = ?", (novos_checkins, cliente_id))
         conn.execute("UPDATE cliente_detox SET status = ? WHERE id = ?", (status,cliente_id))
         conn.commit()

@@ -39,14 +39,12 @@ def ad_checkin_limpeza_data(cliente_id):
             if novos_checkins >= 8:
                 status = False
                 novos_checkins = 0
-                limpeza.zera_checkin(cliente_id)
 
             conn.execute(
                 "INSERT INTO checkin_limpeza (cliente_id, data) VALUES (?, ?)",
                 (cliente_id, databr)
             )
-            if novos_checkins >= 8:
-                limpeza.zera_checkin(cliente_id)
+            
             conn.execute("UPDATE cliente_limpeza SET checkins = ? WHERE id = ?", (novos_checkins, cliente_id))
             conn.execute("UPDATE cliente_limpeza SET status = ? WHERE id = ?", (status,cliente_id))
             conn.commit()
@@ -74,12 +72,9 @@ def registrar_checkin_limpeza(cliente_id):
         if novos_checkins >= 8:
             status = False
             novos_checkins = 0
-            limpeza.zera_checkin(cliente_id)
         
         conn.execute("INSERT INTO checkin_limpeza (cliente_id, data) VALUES (?, ?)",
                         (cliente_id, datetime.now().strftime("%d/%m/%Y %H:%M")))
-        if novos_checkins >= 8:
-            limpeza.zera_checkin(cliente_id)
         conn.execute("UPDATE cliente_limpeza SET checkins = ? WHERE id = ?", (novos_checkins, cliente_id))
         conn.execute("UPDATE cliente_limpeza SET status = ? WHERE id = ?", (status,cliente_id))
         conn.commit()

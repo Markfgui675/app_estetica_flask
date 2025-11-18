@@ -39,14 +39,11 @@ def ad_checkin_ventosa_data(cliente_id):
             if novos_checkins >= 7:
                 status = False
                 novos_checkins = 0
-                ventosa.zera_checkin(cliente_id)
 
             conn.execute(
                 "INSERT INTO checkin_ventosa (cliente_id, data) VALUES (?, ?)",
                 (cliente_id, databr)
             )
-            if novos_checkins >= 7:
-                ventosa.zera_checkin(cliente_id)
             conn.execute("UPDATE cliente_ventosa SET checkins = ? WHERE id = ?", (novos_checkins, cliente_id))
             conn.execute("UPDATE cliente_ventosa SET status = ? WHERE id = ?", (status,cliente_id))
             conn.commit()
@@ -74,12 +71,9 @@ def registrar_checkin_ventosa(cliente_id):
         if novos_checkins >= 7:
             status = False
             novos_checkins = 0
-            ventosa.zera_checkin(cliente_id)
         
         conn.execute("INSERT INTO checkin_ventosa (cliente_id, data) VALUES (?, ?)",
                         (cliente_id, datetime.now().strftime("%d/%m/%Y %H:%M")))
-        if novos_checkins >= 7:
-            ventosa.zera_checkin(cliente_id)
         conn.execute("UPDATE cliente_ventosa SET checkins = ? WHERE id = ?", (novos_checkins, cliente_id))
         conn.execute("UPDATE cliente_ventosa SET status = ? WHERE id = ?", (status,cliente_id))
         conn.commit()

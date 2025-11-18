@@ -39,15 +39,6 @@ def excluir_checkin(checkin_id):
     conn.commit()
     conn.close()
 
-
-def zera_checkin(cliente_id):
-    '''reinicia a contagem dos histórico de check-ins'''
-
-    conn = get_db_connection()
-    conn.execute("DELETE FROM checkin_endermo WHERE cliente_id = ?", (cliente_id,))
-    conn.commit()
-    conn.close()
-
 def adicionar_agendamento(cliente_id, data):
     conn = get_db_connection()
     databr = data_br(data)
