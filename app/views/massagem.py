@@ -25,6 +25,7 @@ def ad_checkin_massagem_data(cliente_id):
     conn = get_db_connection()
     agora = datetime.now().strftime("%d/%m/%Y")
     cliente = conn.execute("SELECT * FROM cliente_massagem WHERE id = ?", (cliente_id,)).fetchone()
+    ch = conn.execute("SELECT * FROM config_massagem WHERE id = 1").fetchone()
     if request.method == 'POST':
         data_input = request.form['data_checkin'].strip()
         databr = data_br(data_input)
@@ -32,10 +33,10 @@ def ad_checkin_massagem_data(cliente_id):
         try:
 
             novos_checkins = cliente['checkins'] + 1
-            if novos_checkins >= 5:
+            if novos_checkins >= ch:
                 status = True
             
-            if novos_checkins >= 7:
+            if novos_checkins >= ch+2:
                 status = False
                 novos_checkins = 0
 
@@ -58,15 +59,16 @@ def ad_checkin_massagem_data(cliente_id):
 def registrar_checkin_massagem(cliente_id):
     conn = get_db_connection()
     cliente = conn.execute("SELECT * FROM cliente_massagem WHERE id = ?", (cliente_id,)).fetchone()
+    ch = conn.execute("SELECT * FROM config_massagem WHERE id = 1").fetchone()[1]
     status = False
 
     if cliente:
         
         novos_checkins = cliente['checkins'] + 1
-        if novos_checkins >= 5:
+        if novos_checkins >= ch:
             status = True
         
-        if novos_checkins >= 7:
+        if novos_checkins >= ch+2:
             status = False
             novos_checkins = 0        
 
